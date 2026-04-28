@@ -1,0 +1,21 @@
+{
+  "name": "billmind",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Event-driven bill reminder service built with TypeScript and RabbitMQ.",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeonelCedillo/billmind.git"
+  },
+  "scripts": {
+    "rabbit:start": "./src/scripts/rabbit.sh start",
+    "rabbit:stop": "./src/scripts/rabbit.sh stop",
+    "rabbit:logs": "./src/scripts/rabbit.sh logs"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}
