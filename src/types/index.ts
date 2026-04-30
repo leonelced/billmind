@@ -9,7 +9,7 @@ export type Bill = {
   id: number;
   ownerId: number;
   name: string;
-  amount: number;
+  amount?: number;
   dueDate: Date;
   recurrence: "weekly" | "monthly" | "yearly" | "once";
   isPaid: boolean;
@@ -29,7 +29,7 @@ export type ReminderRule = {
 export type BillReminderEvent = {
   billId: number;
   billName: string;
-  amount: number;
+  amount?: number;
   dueDate: Date;
   recipientEmail: string;
   recipientUsername: string;

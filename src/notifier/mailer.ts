@@ -24,7 +24,7 @@ export async function sendReminderEmail(event:BillReminderEvent): Promise<void> 
     from: `BillMind <${gmailUser}>`,
     to: event.recipientEmail,
     subject: `Reminder: ${event.billName} is due in ${event.daysUntilDue} days`,
-    text: `Hi ${event.recipientUsername}, your bill ${event.billName} of $${event.amount} is due in ${event.daysUntilDue} days.`,
+    text: `Hi ${event.recipientUsername}, your bill ${event.billName} ${event.amount ? `of $${event.amount}` : ''} is due in ${event.daysUntilDue} days.`,
   })
 
 }
