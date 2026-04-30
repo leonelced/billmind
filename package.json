@@ -12,7 +12,6 @@
     "rabbit:start": "./src/scripts/rabbit.sh start",
     "rabbit:stop": "./src/scripts/rabbit.sh stop",
     "rabbit:logs": "./src/scripts/rabbit.sh logs",
-    
     "scheduler": "npx tsx src/scheduler/index.ts",
     "notifier": "npx tsx src/notifier/index.ts"
   },
@@ -20,12 +19,15 @@
     "@types/amqplib": "^0.10.8",
     "@types/node": "^25.6.0",
     "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^8.0.0",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   },
   "dependencies": {
     "@msgpack/msgpack": "^3.1.3",
     "amqplib": "^1.0.3",
-    "node-cron": "^4.2.1"
+    "dotenv": "^17.4.2",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^8.0.7"
   }
 }

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import amqp from "amqplib";
 import cron from "node-cron";
 import { publishJSON } from "../pubsub/publish.js";
@@ -5,23 +6,31 @@ import { BillReminderPrefix, ExchangeBillMindTopic } from "../routing/routing.js
 import type { BillReminderEvent } from "../types/index.js";
 
 
+const dueDate = new Date();
+dueDate.setDate(dueDate.getDate() + 7);
+
+const email1 = process.env.GMAIL_USER_1;
+const email2 = process.env.GMAIL_USER_2;
+if (!email1 || !email2 ) throw new Error("Now email1 or email2");
+
 const fakeBills = [
-    {
-      id: 1,
-      name: "Rent",
-      amount: 1500,
-      dueDate: new Date(),
-      members: [
-        { username: "leonel", email: "leonel@email.com" },
-        { username: "maria", email: "maria@email.com" },
-      ]
-    }
-  ]
+  {
+    id: 1,
+    name: "Rent",
+    amount: 1500,
+    dueDate: dueDate,
+    members: [
+      { username: "john", email: email1 },
+      { username: "maria", email: email2 },
+    ]
+  }
+]
 
 
 async function main() {
   // Connection string (This is how your application will know where to connect to the RabbitMQ server):
-  const rabbitConnString = "amqp://guest:guest@localhost:5672/";
+  const rabbitConnString = process.env.RABBITMQ_URL;
+  if (!rabbitConnString) throw new Error("Missing RABBITMQ_URL in .env");
   const conn = await amqp.connect(rabbitConnString); // creates a new connection to rabbitMQ
   console.log("BillMind scheduler connected to RabbitMQ!");
 
@@ -41,7 +50,7 @@ async function main() {
   const publishCh = await conn.createConfirmChannel();
   await publishCh.assertExchange(ExchangeBillMindTopic, "topic", { durable: true });
 
-  cron.schedule('* * * * *', async () => {
+  cron.schedule('*/5 * * * *', async () => {
     console.log("Running every minute");
     for (let bill of fakeBills) {
       for (let member of bill.members) {
