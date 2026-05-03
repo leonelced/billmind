@@ -12,9 +12,14 @@
     "rabbit:start": "./src/scripts/rabbit.sh start",
     "rabbit:stop": "./src/scripts/rabbit.sh stop",
     "rabbit:logs": "./src/scripts/rabbit.sh logs",
+    
     "pg:start": "./src/scripts/postgres.sh start",
     "pg:stop": "./src/scripts/postgres.sh stop",
     "pg:logs": "./src/scripts/postgres.sh logs",
+
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+
     "scheduler": "npx tsx src/scheduler/index.ts",
     "notifier": "npx tsx src/notifier/index.ts"
   },
