@@ -1,7 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import { errorMiddleWare } from "./api/middleware.js";
-import authRouter from "./api/routes.js"
+import authRouter from "./routes/authRoutes.js"
+import billsRouter from "./routes/billsRoutes.js"
+
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -11,6 +13,8 @@ app.use(express.json());
 
 // Route all /api/auth/* requests to authRouter
 app.use("/api/auth", authRouter);
+
+app.use("/api/bills", billsRouter);
 
 // Error handling middleware in non-async code
 app.use(errorMiddleWare);
