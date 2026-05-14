@@ -1,8 +1,11 @@
 import type { Request, Response } from "express";
-import type { NewUser } from "../../db/schema.js";
+import type { NewUser, User } from "../../db/schema.js";
 import { createUser } from "../../db/queries/users.js";
 import { BadRequestError } from "./errors.js";
 import { hashPassword } from "./auth.js";
+
+
+export type UserResponse = Omit<User, "passwordHash">
 
 
 export async function handlerRegister(req: Request, res: Response) {
@@ -22,7 +25,7 @@ export async function handlerRegister(req: Request, res: Response) {
   const newUser: NewUser = {
     username : params.username,
     email : params.email,
-    passwordHash : passwordHash
+    passwordHash
   };
 
   const user = await createUser(newUser);  
@@ -34,6 +37,7 @@ export async function handlerRegister(req: Request, res: Response) {
   res.status(201).json({
     id: user.id,
     username: user.username,
-    email: user.email
-  });
+    email: user.email, 
+    createdAt: user.createdAt
+  } satisfies UserResponse);
 }
