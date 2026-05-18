@@ -17,7 +17,7 @@ start_or_run () {
         create_db
     else
         echo "BillMind Postgres container not found, creating a new one..."
-        docker run -d --name billmind_postgres -p 5432:5432 -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD postgres:17
+        docker run -d --name billmind_postgres -p 5432:5432 -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD -e TZ=America/Los_Angeles postgres:17
         sleep 3
         create_db        
     fi
