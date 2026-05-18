@@ -1,9 +1,9 @@
 export type BillReminderEvent = {
-  billId: number;
+  billId: string;
   billName: string;
-  amount?: number;
+  amount?: string | null;
   dueDate: Date;
-  recipientEmail: string;
+  daysBeforeDue: number;
   recipientUsername: string;
-  daysUntilDue: number;
+  recipientEmail: string;
 };
