@@ -71,7 +71,7 @@ export async function handlerBillRemindersAdd(req: Request, res: Response) {
     daysBeforeDue: req.body.daysBeforeDue
   };
 
-  if (!newReminderRule.billId || !newReminderRule.daysBeforeDue) {
+  if (!newReminderRule.billId || newReminderRule.daysBeforeDue == null) {
     throw new BadRequestError("Missing Required Field");
   }  
 
