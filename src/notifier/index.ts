@@ -4,27 +4,11 @@ import { BillReminderPrefix, ExchangeBillMindTopic } from "../routing/routing.js
 import { SimpleQueueType, AckType, subscribeJSON } from "../pubsub/consume.js";
 import type { BillReminderEvent } from "../types/index.js";
 import { sendReminderEmail } from "./mailer.js";
+import { getBillsWithRemindersForToday } from "../db/queries/reminders.js";
 
 
-const dueDate = new Date();
-dueDate.setDate(dueDate.getDate() + 7);
-
-const email1 = process.env.GMAIL_USER_1;
-const email2 = process.env.GMAIL_USER_2;
-if (!email1 || !email2 ) throw new Error("Now email1 or email2");
-
-const fakeBills = [
-  {
-    id: 1,
-    name: "Rent",
-    amount: 1500,
-    dueDate: dueDate,
-    members: [
-      { username: "john", email: email1 },
-      { username: "maria", email: email2 },
-    ]
-  }
-]
+const bills = await getBillsWithRemindersForToday();
+console.log("Bills found:", bills);
 
 
 async function main() {
@@ -50,27 +34,24 @@ async function main() {
   const ch = await conn.createChannel();
   await ch.assertExchange(ExchangeBillMindTopic, "topic", { durable: true });
 
-  // For each client,
-  // Declares a queue and binds it to an Exhange,
-  // And consumes a new message from that queue.
-  for (let bill of fakeBills) {
-    for (let member of bill.members) {
-      await subscribeJSON(
-        conn, 
-        ExchangeBillMindTopic, 
-        `${BillReminderPrefix}.${member.username}`, // Queue: bill.reminder.username
-        `${BillReminderPrefix}.${member.username}`, // RKey: bill.reminder.username
-        SimpleQueueType.Transient, 
-        handlerLog()
-      );
-    }
+  // Declares a Single queue (and binds it to an Exhange) 
+  // subscribing to all reminder events via wildcard
+  for (const bill of bills) {
+    await subscribeJSON(
+      conn, 
+      ExchangeBillMindTopic, 
+      `${BillReminderPrefix}.all`, // Queue: one queue for all reminders
+      `${BillReminderPrefix}.*`,   // RKey: matches bill.reminder.anyone
+      SimpleQueueType.Transient, 
+      handlerLog()
+    );
   }
 }
 
 export function handlerLog(): (event: BillReminderEvent) => Promise<AckType>{
   return async (event: BillReminderEvent): Promise<AckType> => {
     await sendReminderEmail(event);
-    console.log(`Reminder: ${event.recipientUsername} - ${event.billName} due in ${event.daysUntilDue} days`);
+    console.log(`Reminder: ${event.recipientUsername} - ${event.billName} due in ${event.daysBeforeDue} days`);
     return AckType.Ack;
   }
 }

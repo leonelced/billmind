@@ -3,28 +3,34 @@ import amqp from "amqplib";
 import cron from "node-cron";
 import { publishJSON } from "../pubsub/publish.js";
 import { BillReminderPrefix, ExchangeBillMindTopic } from "../routing/routing.js";
+import { getBillsWithRemindersForToday } from "../db/queries/reminders.js";
 import type { BillReminderEvent } from "../types/index.js";
+import type { ConfirmChannel } from "amqplib";
 
 
-const dueDate = new Date();
-dueDate.setDate(dueDate.getDate() + 7);
+async function publishReminders(publishCh: ConfirmChannel) {
+  console.log("Checking for upcoming bills...");
+  const bills = await getBillsWithRemindersForToday();
+  console.log("Bills found:", bills);
 
-const email1 = process.env.GMAIL_USER_1;
-const email2 = process.env.GMAIL_USER_2;
-if (!email1 || !email2 ) throw new Error("Now email1 or email2");
-
-const fakeBills = [
-  {
-    id: 1,
-    name: "Rent",
-    amount: 1500,
-    dueDate: dueDate,
-    members: [
-      { username: "john", email: email1 },
-      { username: "maria", email: email2 },
-    ]
+  for (const bill of bills) {
+    const billReminderEvent: BillReminderEvent = {
+      billId: bill.id,
+      billName: bill.name,
+      amount: bill.amount,
+      dueDate: bill.dueDate,
+      daysBeforeDue: bill.daysBeforeDue,
+      recipientUsername: bill.recipientUsername,
+      recipientEmail: bill.recipientEmail,
+    }
+    await publishJSON<BillReminderEvent>(
+      publishCh, 
+      ExchangeBillMindTopic, 
+      `${BillReminderPrefix}.${bill.recipientUsername}`, 
+      billReminderEvent
+    );
   }
-]
+}
 
 
 async function main() {
@@ -50,26 +56,11 @@ async function main() {
   const publishCh = await conn.createConfirmChannel();
   await publishCh.assertExchange(ExchangeBillMindTopic, "topic", { durable: true });
 
-  cron.schedule('*/5 * * * *', async () => {
-    console.log("Running every minute");
-    for (let bill of fakeBills) {
-      for (let member of bill.members) {
-        await publishJSON<BillReminderEvent>(
-          publishCh, 
-          ExchangeBillMindTopic, 
-          `${BillReminderPrefix}.${member.username}`, 
-          {
-            billId: bill.id,
-            billName: bill.name,
-            amount: bill.amount,
-            dueDate: bill.dueDate,
-            recipientEmail: member.email,
-            recipientUsername: member.username,
-            daysUntilDue: Math.floor((bill.dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-          }
-        );
-      }
-    }
+  await publishReminders(publishCh); // check imidiatelly
+
+  // cron.schedule('0 8 * * *', async () => { // check at minute 0 of hour 8, every day
+  cron.schedule('*/5 * * * *', async () => { // check every 5 minutes for testing purposes
+    await publishReminders(publishCh);
   });
 }
 
