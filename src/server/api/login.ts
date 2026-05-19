@@ -1,7 +1,8 @@
 import type { Request, Response } from "express";
 import { getUserByEmail } from "../../db/queries/users.js";
 import { UserNotAuthenticatedError, BadRequestError } from "./errors.js";
-import { checkPasswordHash } from "./auth.js";
+import { checkPasswordHash, makeJWT } from "./auth.js";
+import { config } from "../../config.js";
 
 
 export async function handlerLogin(req: Request, res: Response) {
@@ -25,13 +26,14 @@ export async function handlerLogin(req: Request, res: Response) {
     throw new UserNotAuthenticatedError("Invalid username or password");
   }
   
-  // auth later with access token and refresh token here
+  const accessToken = makeJWT(user.id, config.defaultDuration, config.secret);
 
   res.status(200).json({
     id: user.id,
     username: user.username,
     email: user.email,
-    createdAt: user.createdAt
+    createdAt: user.createdAt,
+    token: accessToken
   });
 }
 

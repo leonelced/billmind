@@ -1,7 +1,9 @@
 import type { Request, Response } from "express";
 import type { NewBill, NewBillMember, NewReminderRule } from "../../db/schema.js";
-import { addBillMember, createBill, addReminderRule } from "../../db/queries/bills.js";
-import { BadRequestError } from "./errors.js";
+import { addBillMember, createBill, addReminderRule, getBill } from "../../db/queries/bills.js";
+import { BadRequestError, NotFoundError, UserForbiddenError } from "./errors.js";
+import { getBearerToken, validateJWT } from "./auth.js";
+import { config } from "../../config.js";
 
 
 export async function handlerBillsCreate(req: Request, res: Response) {
@@ -18,7 +20,8 @@ export async function handlerBillsCreate(req: Request, res: Response) {
     throw new BadRequestError("Missing Required Field");
   }
 
-  const userId = validateJWT()
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.secret);
 
   const newBill: NewBill = {
     ownerId : userId,
@@ -38,15 +41,9 @@ export async function handlerBillsCreate(req: Request, res: Response) {
 }
 
 
-// Temp function **********************
-export function validateJWT() {
-  return String(process.env.TEST_USER_ID);
-}
-
-
-// billMembers Table -------------------------------------
-
 export async function handlerBillMembersAdd(req: Request, res: Response) {
+  const token = getBearerToken(req);
+  const untrustedUserId = validateJWT(token, config.secret);
   const newBillMember: NewBillMember = {
     billId: req.params.billId as string,
     userId: req.body.userId
@@ -54,6 +51,15 @@ export async function handlerBillMembersAdd(req: Request, res: Response) {
 
   if (!newBillMember.billId || !newBillMember.userId) {
     throw new BadRequestError("Missing Required Field");
+  }
+
+  const bill = await getBill(newBillMember.billId);
+
+  if (!bill) {
+    throw new NotFoundError(`Bill with id: ${newBillMember.billId} not found`);
+  }
+  if (bill.ownerId !== untrustedUserId) {
+    throw new UserForbiddenError("User forbidden");
   }
 
   const billMember = await addBillMember(newBillMember);
@@ -66,6 +72,8 @@ export async function handlerBillMembersAdd(req: Request, res: Response) {
 
 
 export async function handlerBillRemindersAdd(req: Request, res: Response) {
+  const token = getBearerToken(req);
+  const untrustedUserId = validateJWT(token, config.secret);
   const newReminderRule: NewReminderRule = {
     billId: req.params.billId as string,
     daysBeforeDue: req.body.daysBeforeDue
@@ -73,6 +81,15 @@ export async function handlerBillRemindersAdd(req: Request, res: Response) {
 
   if (!newReminderRule.billId || newReminderRule.daysBeforeDue == null) {
     throw new BadRequestError("Missing Required Field");
+  }  
+
+  const bill = await getBill(newReminderRule.billId);
+
+  if (!bill) {
+    throw new NotFoundError(`Bill with id: ${newReminderRule.billId} not found`);
+  }
+  if (bill.ownerId !== untrustedUserId) {
+    throw new UserForbiddenError("User forbidden");
   }  
 
   const reminderRule = await addReminderRule(newReminderRule);

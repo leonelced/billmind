@@ -2,7 +2,8 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { config } from "../../config.js";
 import { type JwtPayload } from "jsonwebtoken";
-import { UserNotAuthenticatedError } from "./errors.js";
+import { type Request } from "express";
+import { UserNotAuthenticatedError, BadRequestError } from "./errors.js";
 
 
 export async function hashPassword(password: string): Promise<string> {
@@ -48,4 +49,19 @@ export function validateJWT(token: string, secret: string): string {
   }
   const userId = decoded.sub;
   return userId;
+}
+
+
+export function getBearerToken(req: Request): string {
+  // Authorization: Bearer <token>
+  const authHeader = req.get("Authorization");
+  if (!authHeader) { // Expected format: "Bearer TOKEN_STRING"
+    throw new UserNotAuthenticatedError("Missing authorization header");
+  }
+  const authHeaderParts = authHeader.split(" ");
+  if (authHeaderParts.length < 2 || authHeaderParts[0] !== "Bearer") {
+    throw new BadRequestError("Malformed authorization header");
+  }
+  const token = authHeaderParts[1]!;
+  return token;
 }
