@@ -9,6 +9,7 @@
     "url": "git+https://github.com/LeonelCedillo/billmind.git"
   },
   "scripts": {
+    "authTest": "vitest --run",
     "rabbit:start": "./src/scripts/rabbit.sh start",
     "rabbit:stop": "./src/scripts/rabbit.sh stop",
     "rabbit:logs": "./src/scripts/rabbit.sh logs",
@@ -31,7 +32,8 @@
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
   },
   "dependencies": {
     "@msgpack/msgpack": "^3.1.3",

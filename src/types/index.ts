@@ -7,3 +7,10 @@ export type BillReminderEvent = {
   recipientUsername: string;
   recipientEmail: string;
 };
+
+
+export type JWTConfig = {
+  defaultDuration: number;
+  secret: string;
+  issuer: string;
+}
