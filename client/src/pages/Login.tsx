@@ -1,16 +1,21 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+
+interface LoginResponse {
+  id: number;
+  username: string;
+  email: string;
+  createdAt: string;
+  token: string;
+}
+
 
 export default function Login() { 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  interface LoginResponse {
-    id: number;
-    username: string;
-    email: string;
-    createdAt: string;
-    token: string;
-  }
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
@@ -20,20 +25,28 @@ export default function Login() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
+    if (!response.ok) {
+      setError("Invalid email or password");
+      return;
+    }
     const data = await response.json() as LoginResponse;
-    console.log(data);
+    localStorage.setItem('token', data.token);
+    navigate("/");
   }
 
   return (
     <form onSubmit={handleSubmit}>
       <input
+        type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
+        type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+      { error && <p>{error}</p> }
       <button>Login</button>
     </form>
   );
