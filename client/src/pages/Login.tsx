@@ -4,9 +4,24 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e: React.SubmitEvent) {
+  interface LoginResponse {
+    id: number;
+    username: string;
+    email: string;
+    createdAt: string;
+    token: string;
+  }
+
+  async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
-    console.log(email, password);
+    const url: string = "/api/auth/login";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json() as LoginResponse;
+    console.log(data);
   }
 
   return (
