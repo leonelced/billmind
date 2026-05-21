@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { NewBill, NewBillMember, NewReminderRule } from "../../db/schema.js";
-import { addBillMember, createBill, addReminderRule, getBill } from "../../db/queries/bills.js";
+import { addBillMember, createBill, addReminderRule, getBill, getBillsByMember } from "../../db/queries/bills.js";
 import { BadRequestError, NotFoundError, UserForbiddenError } from "./errors.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../../config.js";
@@ -98,4 +98,12 @@ export async function handlerBillRemindersAdd(req: Request, res: Response) {
   }
 
   res.status(201).json(reminderRule);
+}
+
+
+export async function handlerMemberBillsGet(req: Request, res: Response) {
+  const token = getBearerToken(req);
+  const userId = validateJWT(token, config.secret);
+  const bills = await getBillsByMember(userId);
+  res.status(200).json(bills);
 }
