@@ -1,11 +1,13 @@
 import { db } from "../client.js";
 import { eq } from "drizzle-orm";
-import { bills, billMembers, reminderRules, users} from "../schema.js";
+import { bills, billMembers, reminderRules } from "../schema.js";
 import type { NewBill, NewBillMember, NewReminderRule } from "../schema.js";
 
 
 export async function createBill(newBill: NewBill) {
   const [result] = await db.insert(bills).values(newBill).returning();
+  if (!result) throw new Error("Could not create bill");
+  await db.insert(billMembers).values({ billId: result.id, userId: newBill.ownerId });
   return result;
 }
 
