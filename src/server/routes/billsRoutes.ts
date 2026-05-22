@@ -3,7 +3,8 @@ import {
   handlerBillsCreate, 
   handlerBillMembersAdd, 
   handlerBillRemindersAdd, 
-  handlerMemberBillsGet
+  handlerMemberBillsGet,
+  handlerBillGet
 } from "../api/bills.js";
 
 
@@ -29,5 +30,8 @@ router.get("/", async (req, res, next) => { // per user
   Promise.resolve(handlerMemberBillsGet(req, res)).catch(next);
 });
 
+router.get("/:billId", async (req, res, next) => { // per user
+  Promise.resolve(handlerBillGet(req, res)).catch(next);
+});
 
 export default router;

@@ -1,6 +1,6 @@
 import { db } from "../client.js";
 import { eq } from "drizzle-orm";
-import { bills, billMembers, reminderRules } from "../schema.js";
+import { users, bills, billMembers, reminderRules } from "../schema.js";
 import type { NewBill, NewBillMember, NewReminderRule } from "../schema.js";
 
 
@@ -47,4 +47,47 @@ export async function getBillsByMember(userId: string) {
 export async function addReminderRule(reminderRule: NewReminderRule) {
   const [result] = await db.insert(reminderRules).values(reminderRule).returning();
   return result;
+}
+
+export async function getBillWithRelations(billId: string) {
+  const rows = await db
+    .select()
+    .from(bills)
+    .leftJoin(billMembers, eq(bills.id, billMembers.billId))
+    .leftJoin(reminderRules, eq(bills.id, reminderRules.billId))
+    .leftJoin(users, eq(users.id, billMembers.userId))
+    .where(eq(bills.id, billId));
+
+  if (rows.length == 0) return null;
+  const bill = rows[0]?.bills;
+
+  const membersMap = new Map();
+  const rulesMap = new Map();
+
+  for (const row of rows) {
+    if (row.bill_members) {
+      membersMap.set(
+        row.bill_members.userId, 
+        { 
+          userId: row.bill_members.userId, 
+          userName: row.users?.username,
+          email: row.users?.email
+        }
+      );
+    }
+    if (row.reminder_rules) {
+      rulesMap.set(
+        row.reminder_rules.id, 
+        { 
+          id: row.reminder_rules.id,
+          daysBeforeDue: row.reminder_rules.daysBeforeDue
+        }
+      );
+    }
+  }
+  return {
+    bill,
+    members: Array.from(membersMap.values()),
+    rules: Array.from(rulesMap.values())
+  };
 }
