@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { type BillDetails } from "../types";
 
@@ -9,30 +9,63 @@ export default function Bill() {
   const [bill, setBill] = useState<BillDetails>();
   const { id } = useParams();
   const path = `/api/bills/${id}`;
+  // New member to add:
+  const [userId, setUserId] = useState("");
+
+
+  // Same fetchBill function between renders unless `path` changes
+  const fetchBill = useCallback(async () =>  {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(path, {
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+      const data = await response.json();
+      setBill(data);
+    } catch (err) {
+      setError("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }, [path]);
+
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    async function fetchBill() {
-      try {
-        const response = await fetch(path, {
-          method: "GET",
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (!response.ok) {
-          throw new Error("Request failed");
-        }
-        const data = await response.json();
-        setBill(data);
-      } catch (err) {
-        setError("Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchBill();
-  }, []);
+  }, [fetchBill]); // re-run this effect when fetchBill changes
+
+
+  async function handleAddMember(e: React.SubmitEvent) {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    const billId = bill?.bill.id;
+    const memberPath = `/api/bills/${billId}/members`;
+    try {
+      const response = await fetch(memberPath, {
+        method: "POST",
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({userId})
+      });
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+    } catch (err) {
+      setError("Something went wrong");
+    } finally {
+      fetchBill();
+      setUserId("");
+    }
+  }
+
 
   return (
     <div>
@@ -55,6 +88,13 @@ export default function Bill() {
               <br />
             </div>
           ))}
+          <br />
+
+          <form onSubmit={handleAddMember}>
+            <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} />
+            <button type="submit">Add Member</button>
+          </form>
+
           <br />
           <h2>Rules</h2>
           {bill.rules.map(rule => (
