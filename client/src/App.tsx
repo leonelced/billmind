@@ -11,6 +11,7 @@ function App() {
     <div>
       <BrowserRouter>
         <h1>BillMind</h1>
+        <br />
         <Routes>
           <Route path='/' element={<Home />}/>  
           <Route path='/register' element={<Register />}/>  
