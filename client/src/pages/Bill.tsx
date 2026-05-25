@@ -98,7 +98,7 @@ export default function Bill() {
 
   return (
     <div>
-      <Link to="/">Home</Link>
+      <Link to="/dashboard">Dashboard</Link>
       <br /> <br />
       <h2>{bill?.bill.name}</h2>
       { loading && <p>Loading</p>}

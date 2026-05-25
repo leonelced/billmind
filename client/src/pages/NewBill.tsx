@@ -31,7 +31,7 @@ export default function NewBill() {
       if (!response.ok) {
         throw new Error("Request failed");
       }
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError("Something went wrong");
     }

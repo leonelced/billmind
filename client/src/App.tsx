@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
 import NewBill from './pages/NewBill';
 import Bill from './pages/Bill';
 
@@ -16,6 +17,7 @@ function App() {
           <Route path='/' element={<Home />}/>  
           <Route path='/register' element={<Register />}/>  
           <Route path='/login' element={<Login />}/>  
+          <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/bills/new' element={<NewBill />}/>  
           <Route path='/bills/:id' element={<Bill />}/>  
         </Routes>
