@@ -39,8 +39,6 @@ export default function Dashboard() {
     <div>
       { loading && <p>Loading...</p>}
       { error && <p>{error}</p> }
-      <Link to="/bills/new">+ New Bill</Link>
-      <br /> <br />
       {!loading && !error && bills.map((bill) => (
         <div key={bill.id}>
           <Link to={`/bills/${bill.id}`}>
