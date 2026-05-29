@@ -26,7 +26,7 @@ export async function handlerBillsCreate(req: Request, res: Response) {
   const newBill: NewBill = {
     ownerId : userId,
     name: params.name,
-    dueDate: new Date(params.dueDate),
+    dueDate: new Date(`${params.dueDate}T00:00:00`),
     recurrence: params.recurrence, 
     amount: params.amount ? String(params.amount) : null,
     isPaid: params.isPaid
