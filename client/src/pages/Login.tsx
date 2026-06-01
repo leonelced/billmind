@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { Button } from "#components/ui/button";
+import { Input } from "#components/ui/input";
+import { Label } from "#components/ui/label";
 
 interface LoginResponse {
   id: number;
@@ -36,18 +38,20 @@ export default function Login() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
+      <Label>Email</Label>
+      <Input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <input
+      <Label>Password</Label>
+      <Input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
       { error && <p>{error}</p> }
-      <button>Login</button>
+      <Button>Login</Button>
     </form>
   );
 }

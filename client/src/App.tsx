@@ -8,6 +8,7 @@ import NewBill from './pages/NewBill';
 import Bill from './pages/Bill';
 import Navigation from './components/Navbar';
 import { isAuthenticated } from './utils/auth';
+document.documentElement.classList.add("dark");
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
