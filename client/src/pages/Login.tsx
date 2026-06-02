@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
+
 
 interface LoginResponse {
   id: number;
@@ -37,22 +39,27 @@ export default function Login() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Label>Email</Label>
-      <Input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <Label>Password</Label>
-      <Input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      { error && <p>{error}</p> }
-      <Button>Login</Button>
-    </form>
+    <div className="flex min-h-screen items-center justify-center">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div>
+              <Label>Email</Label>
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div>
+              <Label>Password</Label>
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <Button type="submit">Login</Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
