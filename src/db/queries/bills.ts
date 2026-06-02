@@ -91,3 +91,12 @@ export async function getBillWithRelations(billId: string) {
     rules: Array.from(rulesMap.values())
   };
 }
+
+
+export async function deleteBill(id: string) {
+  const [result] = await db
+    .delete(bills)
+    .where(eq(bills.id, id))
+    .returning();
+  return result;
+}

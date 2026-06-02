@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { NewBill, NewBillMember, NewReminderRule } from "../../db/schema.js";
-import { addBillMember, createBill, addReminderRule, getBill, getBillsByMember, getBillWithRelations } from "../../db/queries/bills.js";
+import { addBillMember, createBill, addReminderRule, getBill, getBillsByMember, getBillWithRelations, deleteBill } from "../../db/queries/bills.js";
 import { BadRequestError, NotFoundError, UserForbiddenError } from "./errors.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../../config.js";
@@ -119,4 +119,23 @@ export async function handlerBillGet(req: Request, res: Response) {
     throw new NotFoundError(`Bill with id: ${billId} not found`);
   }
   res.status(200).json(bill);
+}
+
+
+export async function handlerBillsDelete(req: Request<{ billId: string}>, res: Response) {
+  const { billId } = req.params;
+  const token = getBearerToken(req);
+  const untrustedUserId = validateJWT(token, config.secret);
+  const bill = await getBill(billId);
+  if (!bill) {
+    throw new NotFoundError(`Bill with billId: ${billId} not found`);
+  }
+  if (bill.ownerId !== untrustedUserId) {
+    throw new UserForbiddenError("");
+  }
+  const deleted = await deleteBill(billId);
+  if (!deleted) {
+    throw new Error(`Failed to delete bill with billId: ${billId}`);
+  }
+  res.status(204).send();
 }

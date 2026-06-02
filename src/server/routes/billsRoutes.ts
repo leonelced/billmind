@@ -4,7 +4,8 @@ import {
   handlerBillMembersAdd, 
   handlerBillRemindersAdd, 
   handlerMemberBillsGet,
-  handlerBillGet
+  handlerBillGet,
+  handlerBillsDelete
 } from "../api/bills.js";
 
 
@@ -32,6 +33,12 @@ router.get("/", async (req, res, next) => { // per user
 
 router.get("/:billId", async (req, res, next) => { // per user
   Promise.resolve(handlerBillGet(req, res)).catch(next);
+});
+
+// DELETE Requests
+
+router.delete("/:billId", async (req, res, next) => {
+  Promise.resolve(handlerBillsDelete(req, res)).catch(next);
 });
 
 export default router;
