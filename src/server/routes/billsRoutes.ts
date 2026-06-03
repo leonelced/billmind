@@ -5,13 +5,14 @@ import {
   handlerBillRemindersAdd, 
   handlerMemberBillsGet,
   handlerBillGet,
-  handlerBillsDelete
+  handlerBillsDelete,
+  handlerBillsUpdate
 } from "../api/bills.js";
 
 
 const router = Router();
 
-// POST Requests
+// POST/PUT Requests
 
 router.post("/", async (req, res, next) => {
   Promise.resolve(handlerBillsCreate(req, res)).catch(next);
@@ -23,6 +24,10 @@ router.post("/:billId/members", async (req, res, next) => {
 
 router.post("/:billId/reminders", async (req, res, next) => {
   Promise.resolve(handlerBillRemindersAdd(req, res)).catch(next);
+});
+
+router.put("/:billId", async (req, res, next) => {
+  Promise.resolve(handlerBillsUpdate(req, res)).catch(next);
 });
 
 // GET Requests

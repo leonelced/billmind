@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import type { NewBill, NewBillMember, NewReminderRule } from "../../db/schema.js";
-import { addBillMember, createBill, addReminderRule, getBill, getBillsByMember, getBillWithRelations, deleteBill } from "../../db/queries/bills.js";
+import { addBillMember, createBill, addReminderRule, getBill, getBillsByMember, getBillWithRelations, deleteBill, updateBill } from "../../db/queries/bills.js";
 import { BadRequestError, NotFoundError, UserForbiddenError } from "./errors.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../../config.js";
@@ -138,4 +138,40 @@ export async function handlerBillsDelete(req: Request<{ billId: string}>, res: R
     throw new Error(`Failed to delete bill with billId: ${billId}`);
   }
   res.status(204).send();
+}
+
+
+export async function handlerBillsUpdate(req: Request<{ billId: string}>, res: Response) {
+  type parameters = {
+    name?: string;
+    dueDate?: string;
+    recurrence?: string;
+    amount?: number | undefined;
+    isPaid?: boolean | undefined;
+  }
+  // verify that the user updating the bill is the owner:
+  const { billId } = req.params;
+  const token = getBearerToken(req);
+  const untrustedUserId = validateJWT(token, config.secret);
+  const bill = await getBill(billId);
+  if (!bill) {
+    throw new NotFoundError(`Bill with billId: ${billId} not found`);
+  }
+  if (bill.ownerId !== untrustedUserId) {
+    throw new UserForbiddenError("");
+  }
+  // update the bill:
+  const params: parameters = req.body;
+  const billUpdate = {
+    name: params.name,
+    dueDate: params.dueDate ? new Date(`${params.dueDate}T00:00:00`) : undefined,
+    recurrence: params.recurrence,
+    amount: params.amount ? String(params.amount) : null,
+    isPaid: params.isPaid
+  };
+  const billUpdated = await updateBill(billId, billUpdate);
+  if (!billUpdated) {
+    throw new Error("Could not update bill");
+  }
+  res.status(200).json(billUpdated);
 }

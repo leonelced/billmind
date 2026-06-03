@@ -100,3 +100,19 @@ export async function deleteBill(id: string) {
     .returning();
   return result;
 }
+
+
+export async function updateBill(id:string, billUpdate: Partial<Omit<NewBill, "ownerId">>) {
+  const [result] = await db
+    .update(bills)
+    .set({
+      name: billUpdate.name,
+      dueDate: billUpdate.dueDate,
+      recurrence: billUpdate.recurrence,
+      amount: billUpdate.amount,
+      isPaid: billUpdate.isPaid
+    })
+    .where(eq(bills.id, id))
+    .returning();
+  return result;
+}
