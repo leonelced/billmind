@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { type BillDetails } from "../types";
 import { Input } from "#components/ui/input";
 import { Button } from "#components/ui/button";
@@ -15,7 +15,6 @@ export default function Bill() {
   const [bill, setBill] = useState<BillDetails>();
   const { id } = useParams();
   const path = `/api/bills/${id}`;
-  const navigate = useNavigate();
   // New member to add:
   const [userId, setUserId] = useState("");
   // New reminder rule to add: (remind me this amount of days before the due date)
