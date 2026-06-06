@@ -4,35 +4,36 @@ import { Label } from "#components/ui/label";
 import { Input } from "#components/ui/input";
 import { Button } from "#components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
+import type { Bill, Recurrence } from "../types";
+
 
 type BillFormProps = {
+  title: string;
   path: string;
   reqMethod: string;
-  bName?: string;
-  bDueDate?: string;
-  bRecurrence?: string;
-  bAmount?: number;
-  bIsPaid?: boolean;
-  title: string;
+  initialBill?: Partial<Bill>;
 }
 
 
-export default function BillForm(
-  { path, 
-    reqMethod, 
-    bName, 
-    bDueDate, 
-    bRecurrence, 
-    bAmount, 
-    bIsPaid, 
-    title 
-  }: BillFormProps
-) {
-  const [name, setName] = useState(bName);
-  const [dueDate, setDueDate] = useState(bDueDate);
-  const [recurrence, setRecurrence] = useState(bRecurrence);
-  const [amount, setAmount] = useState<number | undefined>(bAmount);
-  const [isPaid, setIsPaid] = useState(bIsPaid);
+export default function BillForm({
+  title,
+  path,
+  reqMethod,
+  initialBill,
+}: BillFormProps) {
+  const [name, setName] = useState(initialBill?.name ?? "");
+  const [recurrence, setRecurrence] = useState<Recurrence | "">(
+    initialBill?.recurrence ?? ""
+  );
+  const [amount, setAmount] = useState(
+    initialBill?.amount ? Number(initialBill.amount) : undefined
+  );
+  const [dueDate, setDueDate] = useState(initialBill?.dueDate);
+  const [dueDayOfMonth, setDueDayOfMonth] = useState(initialBill?.dueDayOfMonth);
+  const [dueMonth, setDueMonth] = useState(initialBill?.dueMonth);
+  const [isPaid, setIsPaid] = useState(initialBill?.isPaid);
+
+
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -40,26 +41,35 @@ export default function BillForm(
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
+      const body: Record<string, unknown> = {
+        name,
+        recurrence,
+        amount,
+        isPaid
+      }
+      if (recurrence === "once") {
+        body.dueDate = dueDate;
+      } else if (recurrence === "monthly") {
+        body.dueDayOfMonth = dueDayOfMonth;
+      } else if (recurrence === "yearly") {
+        body.dueDayOfMonth = dueDayOfMonth;
+        body.dueMonth = dueMonth;
+      }
       const response = await fetch(path, {
         method: reqMethod,
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}` 
         },
-        body: JSON.stringify({
-          name,
-          dueDate,
-          recurrence,
-          amount,
-          isPaid
-        })
+        body: JSON.stringify(body)
       });
       if (!response.ok) {
-        throw new Error("Request failed");
+        const data = await response.json();
+        throw new Error(data.message || "Request failed");
       }
       navigate("/dashboard");
     } catch (err) {
-      setError("Something went wrong");
+      setError(err instanceof Error ? err.message : "Something went wrong");
     }
     
   }
@@ -75,23 +85,53 @@ export default function BillForm(
               <Label>Bill Name</Label>
               <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
-            <div>
-              <Label>Due Date</Label>
-              <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-            </div>
+            <br />
             <div>
               <Label>Amount</Label>
-              <Input type="number" value={amount ?? ""} 
+              <Input type="number" value={amount ?? ""}
                 onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : undefined)} 
               />
-            </div>            
-            <select value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
-              <option value="">Select recurrence</option>
-              <option value="once">Once</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="yearly">Yearly</option>
-            </select>
+            </div>
+            <br />
+            <div>
+              <select value={recurrence} onChange={(e) =>   
+                setRecurrence(e.target.value as Recurrence)}>
+                <option value="">Select recurrence</option>
+                <option value="once">Once</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>   
+            <br />     
+
+            { recurrence === "once" && 
+              <div>
+                <Label>Due Date</Label>
+                <Input type="date" value={dueDate ?? ""} onChange={(e) => setDueDate(e.target.value)} />
+              </div>
+            }    
+            { recurrence === "monthly" && 
+              <div>
+                <Label>Due Day</Label>
+                <Input type="number" value={dueDayOfMonth ?? ""} min={1} max={31}
+                  onChange={(e) => setDueDayOfMonth(e.target.value ? Number(e.target.value) : undefined)}
+                />
+              </div>
+            }               
+            { recurrence === "yearly" && 
+              <div>
+                <Label>Due Day</Label>
+                <Input type="number" value={dueDayOfMonth ?? ""} min={1} max={31}
+                  onChange={(e) => setDueDayOfMonth(e.target.value ? Number(e.target.value) : undefined)}
+                />
+                <Label>Due Month</Label>
+                <Input type="number" value={dueMonth ?? ""} min={1} max={12}
+                  onChange={(e) => setDueMonth(e.target.value ? Number(e.target.value) : undefined)}
+                />
+              </div>
+            }    
+
+            {/* Show only when editing bill */}
             {isPaid !== undefined && (
               <select value={isPaid ? "true" : "false"} onChange={(e) => setIsPaid(e.target.value === "true")}>
                 <option value="false">Unpaid</option>
@@ -105,6 +145,5 @@ export default function BillForm(
         </CardContent>
       </Card>
     </div>
-    
   ); 
 }

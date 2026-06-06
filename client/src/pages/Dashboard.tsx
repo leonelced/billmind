@@ -53,7 +53,20 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <p>{bill.amount ? `$${bill.amount}` : "Unknown"}</p>
-              <p>{new Date(bill.dueDate).toLocaleDateString()}</p>
+              { bill.recurrence === "once" && 
+                bill.dueDate && 
+                <p>due on {new Date(bill.dueDate).toLocaleDateString()}</p>
+              }
+              { bill.recurrence === "monthly" && 
+                bill.dueDayOfMonth && 
+                <p>due on the day {bill.dueDayOfMonth}</p>
+              }
+              { bill.recurrence === "yearly" && 
+                bill.dueDayOfMonth && 
+                bill.dueMonth && 
+                <p>due on the {bill.dueDayOfMonth} of {bill.dueMonth} each year</p>
+              }
+              <Badge>{bill.recurrence}</Badge>
               <Badge variant={bill.isPaid ? "default" : "destructive"}>
                 {bill.isPaid ? "Paid" : "Unpaid"}
               </Badge>

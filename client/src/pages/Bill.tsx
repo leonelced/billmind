@@ -39,7 +39,7 @@ export default function Bill() {
       const data = await response.json();
       setBill(data);
     } catch (err) {
-      setError("Something went wrong");
+      setError("Something went wrong fetching the bill");
     } finally {
       setLoading(false);
     }
@@ -134,7 +134,19 @@ export default function Bill() {
           </CardHeader>
           <CardContent>
             <p>{bill.bill.amount ? `$${bill.bill.amount}` : "Unknown"}</p>
-            <p>{new Date(bill.bill.dueDate).toLocaleDateString()}</p>
+            { bill.bill.recurrence === "once" && 
+              bill.bill.dueDate && 
+              <p>due on {new Date(bill.bill.dueDate).toLocaleDateString()}</p>
+            }
+            { bill.bill.recurrence === "monthly" && 
+              bill.bill.dueDayOfMonth && 
+              <p>due on the day {bill.bill.dueDayOfMonth}</p>
+            }
+            { bill.bill.recurrence === "yearly" && 
+              bill.bill.dueDayOfMonth && 
+              bill.bill.dueMonth && 
+              <p>due on the {bill.bill.dueDayOfMonth} of {bill.bill.dueMonth} each year</p>
+            }
             <div className="flex gap-2 mt-2">
               <Badge>{bill.bill.recurrence}</Badge>
               <Badge variant={bill.bill.isPaid ? "default" : "destructive"}>
@@ -150,12 +162,18 @@ export default function Bill() {
                 path={`/api/bills/${id}`}
                 reqMethod="PUT"
                 title="Update Bill"
-                bName={bill.bill.name}
-                bDueDate={bill.bill.dueDate.split("T")[0]}
-                bRecurrence={bill.bill.recurrence}
-                bAmount={bill.bill.amount ? Number(bill.bill.amount) : undefined}
-                bIsPaid={bill.bill.isPaid}
-              />   
+                initialBill={{
+                  name: bill.bill.name,
+                  recurrence: bill.bill.recurrence,
+                  amount: bill.bill.amount ? bill.bill.amount : undefined,
+                  dueDate: bill.bill.dueDate
+                    ? bill.bill.dueDate.split("T")[0]
+                    : undefined,
+                  dueDayOfMonth: bill.bill.dueDayOfMonth ? bill.bill.dueDayOfMonth : undefined,
+                  dueMonth: bill.bill.dueMonth ? bill.bill.dueMonth : undefined,
+                  isPaid: bill.bill.isPaid,
+                }}
+              />
             )}
           </CardContent>
         </Card>
