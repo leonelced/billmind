@@ -1,42 +1,31 @@
 import type { Request, Response } from "express";
 import type { NewBill, NewBillMember, NewReminderRule } from "../../db/schema.js";
+import type { BillParameters, UpdateBill } from "./helpers.js";
 import { addBillMember, createBill, addReminderRule, getBill, getBillsByMember, getBillWithRelations, deleteBill, updateBill } from "../../db/queries/bills.js";
 import { BadRequestError, NotFoundError, UserForbiddenError } from "./errors.js";
+import { validateBillParams, verifyBillOwnership } from "./helpers.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../../config.js";
 
-
 export async function handlerBillsCreate(req: Request, res: Response) {
-  type parameters = {
-    name: string;
-    dueDate: string;
-    recurrence: string;
-    amount: number | undefined;
-    isPaid: boolean | undefined;
-  }
-
-  const params: parameters = req.body;
-  if (!params.name || !params.dueDate || !params.recurrence) {
-    throw new BadRequestError("Missing Required Field");
-  }
-
   const token = getBearerToken(req);
   const userId = validateJWT(token, config.secret);
+  const params: BillParameters = req.body;
+  validateBillParams(params);
 
   const newBill: NewBill = {
     ownerId : userId,
     name: params.name,
-    dueDate: new Date(`${params.dueDate}T00:00:00`),
-    recurrence: params.recurrence, 
+    recurrence: params.recurrence,
     amount: params.amount ? String(params.amount) : null,
-    isPaid: params.isPaid
+    dueDate: params.dueDate ? new Date(`${params.dueDate}T00:00:00`) : null,
+    dueDayOfMonth: params.dueDayOfMonth ? params.dueDayOfMonth : null,
+    dueMonth: params.dueMonth ? params.dueMonth : null
   }
-
   const bill = await createBill(newBill);
   if (!bill) {
     throw new Error("Could not create bill");
   }
-
   res.status(201).json(bill);
 }
 
@@ -142,31 +131,20 @@ export async function handlerBillsDelete(req: Request<{ billId: string}>, res: R
 
 
 export async function handlerBillsUpdate(req: Request<{ billId: string}>, res: Response) {
-  type parameters = {
-    name?: string;
-    dueDate?: string;
-    recurrence?: string;
-    amount?: number | undefined;
-    isPaid?: boolean | undefined;
-  }
-  // verify that the user updating the bill is the owner:
-  const { billId } = req.params;
   const token = getBearerToken(req);
   const untrustedUserId = validateJWT(token, config.secret);
-  const bill = await getBill(billId);
-  if (!bill) {
-    throw new NotFoundError(`Bill with billId: ${billId} not found`);
-  }
-  if (bill.ownerId !== untrustedUserId) {
-    throw new UserForbiddenError("");
-  }
-  // update the bill:
-  const params: parameters = req.body;
-  const billUpdate = {
+  const { billId } = req.params;
+  await verifyBillOwnership(untrustedUserId, billId);
+  const params: BillParameters = req.body;
+  validateBillParams(params);
+
+  const billUpdate: UpdateBill = {
     name: params.name,
-    dueDate: params.dueDate ? new Date(`${params.dueDate}T00:00:00`) : undefined,
     recurrence: params.recurrence,
     amount: params.amount ? String(params.amount) : null,
+    dueDate: params.dueDate ? new Date(`${params.dueDate}T00:00:00`) : null,
+    dueDayOfMonth: params.dueDayOfMonth ? params.dueDayOfMonth : null,
+    dueMonth: params.dueMonth ? params.dueMonth : null,
     isPaid: params.isPaid
   };
   const billUpdated = await updateBill(billId, billUpdate);
