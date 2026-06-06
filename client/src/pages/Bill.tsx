@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { Badge } from "#components/ui/badge";
 import BillForm from "#components/BillForm";
 import { useNavigate } from "react-router-dom";
+import { formatDueDate } from "../utils/format";
 
 
 export default function Bill() { 
@@ -134,19 +135,7 @@ export default function Bill() {
           </CardHeader>
           <CardContent>
             <p>{bill.bill.amount ? `$${bill.bill.amount}` : "Unknown"}</p>
-            { bill.bill.recurrence === "once" && 
-              bill.bill.dueDate && 
-              <p>due on {new Date(bill.bill.dueDate).toLocaleDateString()}</p>
-            }
-            { bill.bill.recurrence === "monthly" && 
-              bill.bill.dueDayOfMonth && 
-              <p>due on the day {bill.bill.dueDayOfMonth}</p>
-            }
-            { bill.bill.recurrence === "yearly" && 
-              bill.bill.dueDayOfMonth && 
-              bill.bill.dueMonth && 
-              <p>due on the {bill.bill.dueDayOfMonth} of {bill.bill.dueMonth} each year</p>
-            }
+            <p>{formatDueDate(bill.bill)}</p>
             <div className="flex gap-2 mt-2">
               <Badge>{bill.bill.recurrence}</Badge>
               <Badge variant={bill.bill.isPaid ? "default" : "destructive"}>
@@ -159,7 +148,7 @@ export default function Bill() {
             </Button>     
             {isEditing && (
               <BillForm
-                path={`/api/bills/${id}`}
+                path={path}
                 reqMethod="PUT"
                 title="Update Bill"
                 initialBill={{
