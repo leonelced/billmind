@@ -8,6 +8,7 @@ import { Badge } from "#components/ui/badge";
 import BillForm from "#components/BillForm";
 import { useNavigate } from "react-router-dom";
 import { formatDueDate } from "../utils/format";
+import { apiFetch } from "../utils/auth";
 
 
 export default function Bill() { 
@@ -26,14 +27,8 @@ export default function Bill() {
 
   // Same fetchBill function between renders unless `path` changes
   const fetchBill = useCallback(async () =>  {
-    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(path, {
-        method: "GET",
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await apiFetch(path, { method: "GET" });
       if (!response.ok) {
         throw new Error("Request failed");
       }
@@ -54,18 +49,14 @@ export default function Bill() {
 
   async function handleAddMember(e: React.SubmitEvent) {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     const billId = bill?.bill.id;
     const memberPath = `/api/bills/${billId}/members`;
     if (!billId) return;
     try {
-      const response = await fetch(memberPath, {
-        method: "POST",
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify({userId})
+      const response = await apiFetch( memberPath, { 
+        method: "POST", 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({userId}) 
       });
       if (!response.ok) {
         throw new Error("Request failed");
@@ -81,17 +72,13 @@ export default function Bill() {
 
   async function handleAddRule(e: React.SubmitEvent) {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     const billId = bill?.bill.id;
     const reminderPath = `/api/bills/${billId}/reminders`;
     try {
-      const response = await fetch(reminderPath, {
-        method: "POST",
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify({daysBeforeDue})
+      const response = await apiFetch( reminderPath, { 
+        method: "POST", 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({daysBeforeDue}) 
       });
       if (!response.ok) {
         throw new Error("Request failed");
@@ -107,14 +94,10 @@ export default function Bill() {
 
   async function handleDelete() {
     if (!window.confirm("Are you sure you want to delete this bill?")) return;
-    const token = localStorage.getItem("token");
     const billId = bill?.bill.id;
     const deletePath = `/api/bills/${billId}`;
     try {
-      const response = await fetch(deletePath, {
-        method: "DELETE",
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await apiFetch(deletePath, { method: "DELETE" });
       if (!response.ok) throw new Error("Failed to delete");
       navigate("/dashboard");
     } catch (err) {

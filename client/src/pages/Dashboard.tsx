@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { Badge } from "#components/ui/badge";
 import { formatDueDate } from "../utils/format.js";
+import { apiFetch } from "../utils/auth.js";
 
 
 export default function Dashboard() { 
@@ -14,22 +15,15 @@ export default function Dashboard() {
 
   // this runs once when the component first renders
   useEffect(() => {
-    const token = localStorage.getItem("token");
     async function fetchBills() {
       try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-        });
-        if (!response.ok) { // http errors
-          setError("Response failed");
-          return;
+        const response = await apiFetch(url, { method: "GET" });
+        if (!response.ok) {
+          throw new Error("Request failed");          
         }
         const data = await response.json();
         setBills(data);
-      } catch (err) { // network errors
+      } catch (err) {
         setError("Something went wrong");
       } finally {
         setLoading(false);

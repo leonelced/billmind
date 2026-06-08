@@ -5,6 +5,7 @@ import { Input } from "#components/ui/input";
 import { Button } from "#components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import type { Bill, Recurrence } from "../types";
+import { apiFetch } from "../utils/auth";
 
 
 type BillFormProps = {
@@ -32,14 +33,11 @@ export default function BillForm({
   const [dueDayOfMonth, setDueDayOfMonth] = useState(initialBill?.dueDayOfMonth);
   const [dueMonth, setDueMonth] = useState(initialBill?.dueMonth);
   const [isPaid, setIsPaid] = useState(initialBill?.isPaid);
-
-
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     try {
       const body: Record<string, unknown> = {
         name,
@@ -55,13 +53,10 @@ export default function BillForm({
         body.dueDayOfMonth = dueDayOfMonth;
         body.dueMonth = dueMonth;
       }
-      const response = await fetch(path, {
-        method: reqMethod,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify(body)
+      const response = await apiFetch(path, { 
+        method: reqMethod, 
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body) 
       });
       if (!response.ok) {
         const data = await response.json();
