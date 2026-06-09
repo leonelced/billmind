@@ -7,7 +7,8 @@ import {
   boolean, 
   unique, 
   integer,
-  check
+  check,
+  varchar
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -75,3 +76,17 @@ export const reminderRules = pgTable("reminder_rules", {
 
 export type ReminderRule = typeof reminderRules.$inferSelect;
 export type NewReminderRule = typeof reminderRules.$inferInsert;
+
+
+export const refreshTokens = pgTable("refresh_tokens", {
+  tokenHash: varchar("token_hash", { length: 64 }).primaryKey(),
+  userId: uuid("user_id").notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+  revokedAt: timestamp("revoked_at"), // null if not revoked
+});
+
+export type RefreshToken = typeof refreshTokens.$inferSelect;
+export type NewRefreshToken = typeof refreshTokens.$inferInsert;
+
