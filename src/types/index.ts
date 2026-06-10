@@ -1,3 +1,6 @@
+import { type NewUser } from "../db/schema.js";
+
+
 export type BillReminderEvent = {
   billId: string;
   billName: string;
@@ -11,8 +14,10 @@ export type BillReminderEvent = {
   recipientEmail: string;
 };
 
-export type JWTConfig = {
-  defaultDuration: number;
-  secret: string;
-  issuer: string;
-}
+
+export type UserResponse = Omit<NewUser, "passwordHash">;
+
+export type LoginResponse = UserResponse & { 
+    token: string; // access token
+    refreshToken: string; 
+};
