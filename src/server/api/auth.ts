@@ -1,4 +1,5 @@
 import argon2 from "argon2";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { config } from "../../config.js";
 import { type JwtPayload } from "jsonwebtoken";
@@ -6,9 +7,12 @@ import { type Request } from "express";
 import { UserNotAuthenticatedError, BadRequestError } from "./errors.js";
 
 
+// Hash Password --------------------------------------------------------------------------
+
 export async function hashPassword(password: string): Promise<string> {
   return argon2.hash(password);
 }
+
 
 export async function checkPasswordHash(password: string, hash: string): Promise<boolean> {
   if (!password) return false;
@@ -19,7 +23,11 @@ export async function checkPasswordHash(password: string, hash: string): Promise
   }
 }
 
+
+// Access Token ---------------------------------------------------------------------------
+
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">
+
 
 export function makeJWT(userId: string, expiresIn: number, secret: string): string {
   const issuedAt = Math.floor(Date.now() / 1000) // in seconds
@@ -33,6 +41,7 @@ export function makeJWT(userId: string, expiresIn: number, secret: string): stri
   const token = jwt.sign(payload, secret, {algorithm: "HS256"})
   return token;
 }
+
 
 export function validateJWT(token: string, secret: string): string {
   let decoded: payload;
@@ -65,3 +74,16 @@ export function getBearerToken(req: Request): string {
   const token = authHeaderParts[1]!;
   return token;
 }
+
+
+// Refresh Token --------------------------------------------------------------------------
+
+// Generate a random 512-bit (64-bytes x 8 bits) encoded string
+export function makeRefreshToken() { // ~86 chars
+  return crypto.randomBytes(64).toString("base64url");
+}
+
+// Hex is always 64 chars for SHA-256
+export function hashRefreshToken(refreshToken: string) {
+  return crypto.createHash("sha256").update(refreshToken).digest("hex");
+} 
