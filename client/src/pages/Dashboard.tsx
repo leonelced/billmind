@@ -24,7 +24,7 @@ export default function Dashboard() {
         const data = await response.json();
         setBills(data);
       } catch (err) {
-        setError("Something went wrong");
+        setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
         setLoading(false);
       }
