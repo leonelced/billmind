@@ -12,9 +12,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
       ...options.headers
     },
   });
-  console.log("response status:", response.status); // add this
   if (response.status === 401) {
-    console.log("got 401, refreshing..."); // add this
     return await refreshFetch(url, options);
   }
   return response;
@@ -34,9 +32,7 @@ async function refreshFetch(url: string, options: RequestInit = {}) {
     throw new Error("Session expired");
   }
   const data = await refreshResponse.json();
-  console.log("new token:", data.token); // add this
   localStorage.setItem('token', data.token);
-  console.log("token in localStorage:", localStorage.getItem('token')); // add this
   return await fetch(url, {
     ...options,
     headers: {
