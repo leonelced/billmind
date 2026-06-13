@@ -19,7 +19,7 @@ export default function Bill() {
   const { id } = useParams();
   const path = `/api/bills/${id}`;
   // New member to add:
-  const [userId, setUserId] = useState("");
+  const [newMemberEmail, setNewMemberEmail] = useState("");
   // New reminder rule to add: (remind me this amount of days before the due date)
   const [daysBeforeDue, setDaysBeforeDue] = useState<number | undefined>(undefined);
   const navigate = useNavigate();
@@ -56,16 +56,18 @@ export default function Bill() {
       const response = await apiFetch( memberPath, { 
         method: "POST", 
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({userId}) 
+        body: JSON.stringify({ email: newMemberEmail }) 
       });
       if (!response.ok) {
-        throw new Error("Request failed");
+        const data = await response.json();
+        throw new Error(data.message);
       }
     } catch (err) {
-      setError("Something went wrong");
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setTimeout(() => setError(""), 5000) // clear after 5 seconds
     } finally {
       await fetchBill();
-      setUserId("");
+      setNewMemberEmail("");
     }
   }
 
@@ -84,7 +86,7 @@ export default function Bill() {
         throw new Error("Request failed");
       }
     } catch (err) {
-      setError("Something went wrong");
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       await fetchBill();
       setDaysBeforeDue(undefined);
@@ -102,6 +104,8 @@ export default function Bill() {
       navigate("/dashboard");
     } catch (err) {
       setError("Could not delete bill")
+    } finally {
+      await fetchBill();
     }
   }
 
@@ -162,7 +166,12 @@ export default function Bill() {
               </div>
             ))}
             <form onSubmit={handleAddMember}>
-              <Input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} />
+              <Input 
+                type="email" 
+                value={newMemberEmail} 
+                onChange={(e) => setNewMemberEmail(e.target.value)} 
+                placeholder="example@email.com" 
+              />
               <Button type="submit">Add Member</Button>
             </form>
           </CardContent>
@@ -170,7 +179,7 @@ export default function Bill() {
 
         <Card className="max-w-sm shrink-0">
           <CardHeader>
-            <CardTitle>Rules</CardTitle>
+            <CardTitle>Reminder Days Before Due Date</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex gap-2 mt-2">
@@ -189,7 +198,7 @@ export default function Bill() {
                   e.target.value === "" ? undefined : Number(e.target.value)
                 )} 
               />
-              <Button type="submit">Add Rule</Button>
+              <Button type="submit">Add Day</Button>
             </form>
           </CardContent>
         </Card>

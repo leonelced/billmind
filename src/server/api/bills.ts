@@ -6,6 +6,7 @@ import { BadRequestError, NotFoundError, UserForbiddenError } from "./errors.js"
 import { validateBillParams, verifyBillOwnership } from "./helpers.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../../config.js";
+import { getUserByEmail } from "../../db/queries/users.js";
 
 export async function handlerBillsCreate(req: Request, res: Response) {
   const token = getBearerToken(req);
@@ -33,25 +34,34 @@ export async function handlerBillsCreate(req: Request, res: Response) {
 export async function handlerBillMembersAdd(req: Request, res: Response) {
   const token = getBearerToken(req);
   const untrustedUserId = validateJWT(token, config.secret);
-  const newBillMember: NewBillMember = {
-    billId: req.params.billId as string,
-    userId: req.body.userId
-  };
 
-  if (!newBillMember.billId || !newBillMember.userId) {
+  const newBillMemberEmail = req.body.email;
+  const billId = req.params.billId as string;
+  if (!newBillMemberEmail || !billId) {
     throw new BadRequestError("Missing Required Field");
   }
 
-  const bill = await getBill(newBillMember.billId);
-
+  // verify bill ownership
+  const bill = await getBill(billId);
   if (!bill) {
-    throw new NotFoundError(`Bill with id: ${newBillMember.billId} not found`);
+    throw new NotFoundError(`Bill with id: ${billId} not found`);
   }
   if (bill.ownerId !== untrustedUserId) {
     throw new UserForbiddenError("User forbidden");
   }
 
-  const billMember = await addBillMember(newBillMember);
+  // look up the user (new member)
+  const userFound = await getUserByEmail(newBillMemberEmail);
+  if (!userFound) {
+    throw new NotFoundError(`User with email ${newBillMemberEmail} does not exists`);
+  }
+
+  // add user to bill
+  const billMember = await addBillMember({
+    billId: billId,
+    userId: userFound.id
+  } satisfies NewBillMember);
+
   if (!billMember) {
     throw new Error("Could not create bill member");
   }
