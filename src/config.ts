@@ -10,9 +10,8 @@ type JWTConfig = {
 
 
 export const config: JWTConfig = {
-  defaultDuration: 60 ,// * 15 access token: 15 minutes
-  // refreshDuration: 60 * 60 * 24 * 60 * 1000, // refresh token: 60 days in milliseconds,
-  refreshDuration: 60 * 3 * 1000,
+  defaultDuration: 60 * 15, // access token: 15 minutes
+  refreshDuration: 60 * 60 * 24 * 30 * 1000, // refresh token: 30 days in milliseconds,
   secret: envOrThrow("JWT_SECRET"),
   issuer: "billmind"
 }
