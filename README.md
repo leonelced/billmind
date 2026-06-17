@@ -19,3 +19,13 @@ Most brokerages and banks already send payment reminders, but only for their own
 
 I also kept missing upcoming payments and juggling reminders across different apps, so I built BillMind to bring everything into one place and make bill tracking simple, flexible, and easy to rely on.
 
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20+
+- Docker
+
+See the [Contributing](#-contributing) section for full local setup instructions.
+
+
