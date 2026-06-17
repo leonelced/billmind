@@ -1,6 +1,6 @@
 # BillMind
 
-A full-stack bill reminder app that lets users define their bills and reminder schedules, and BillMind automatically sends email notifications through a pub/sub pipeline with support for shared reminders across multiple users.
+A full-stack bill reminder app that lets users define their bills and reminder schedules, and BillMind automatically sends email notifications through a pub/sub pipeline with support for sharing bills across multiple users.
 
 <p align="center">
   <img src="client/public/bills.png" alt="Bills" width="65%"><br>
@@ -56,6 +56,28 @@ Failed emails are routed to a Dead Letter Queue instead of being lost.
 | DELETE | `/api/bills/:id` | Delete a bill |
 | POST | `/api/bills/:id/members` | Add a member by email |
 | POST | `/api/bills/:id/reminders` | Add a reminder rule |
+
+
+## Tech Stack
+
+**Backend**
+- Node.js + TypeScript
+- Express — REST API
+- RabbitMQ — pub/sub message broker
+- PostgreSQL — database
+- Drizzle ORM — type-safe database queries
+- Argon2 — password hashing
+- JWT — authentication
+
+**Frontend**
+- React + TypeScript
+- Vite — build tool
+- React Router — client-side routing
+- shadcn/ui — component library 
+
+**Infrastructure**
+- Docker — RabbitMQ and PostgreSQL containers
+- Nodemailer — email delivery via Gmail SMTP
 
 
 ## 🤝 Contributing
