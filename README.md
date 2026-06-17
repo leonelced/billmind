@@ -58,3 +58,65 @@ Failed emails are routed to a Dead Letter Queue instead of being lost.
 | POST | `/api/bills/:id/reminders` | Add a reminder rule |
 
 
+## 🤝 Contributing
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/LeonelCedillo/billmind.git
+cd billmind
+```
+
+### 2. Set up environment variables
+Create a `.env` file in the root directory:
+
+RABBITMQ_URL=amqp://guest:guest@localhost:5672/
+
+DB_URL=postgresql://postgres:postgres@localhost:5432/billmind
+
+POSTGRES_PASSWORD=postgres
+
+JWT_SECRET=your_jwt_secret
+
+GMAIL_USER=your_gmail@gmail.com
+
+GMAIL_PASSWORD=your_gmail_app_password
+
+PORT=3000
+
+### 3. Start RabbitMQ and PostgreSQL
+```bash
+npm run rabbit:start
+npm run pg:start
+```
+
+### 4. Install dependencies and run migrations
+```bash
+npm install
+npm run db:migrate
+```
+
+### 5. Start the services
+Open three terminals:
+```bash
+# Terminal 1 - API server
+npm run server
+
+# Terminal 2 - Scheduler
+npm run scheduler
+
+# Terminal 3 - Notifier
+npm run notifier
+```
+
+### 6. Start the frontend
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Navigate to `http://localhost:5173`
+
+
+### Submit a pull request
+If you'd like to contribute, please fork the repository and open a pull request to the `main` branch.
