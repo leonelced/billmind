@@ -84,7 +84,7 @@ Failed emails are routed to a Dead Letter Queue instead of being lost.
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/LeonelCedillo/billmind.git
+git clone https://github.com/leonelced/billmind.git
 cd billmind
 ```
 
