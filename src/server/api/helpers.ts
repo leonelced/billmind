@@ -75,7 +75,7 @@ export function validateBillParams(params: BillParameters) {
 export async function verifyBillOwnership(userId: string, billId: string) {
   const bill = await getBill(billId);
   if (!bill) {
-    throw new NotFoundError(`Bill with billId: ${billId} not found`);
+    throw new NotFoundError(`Bill with id: ${billId} not found`);
   }
   if (bill.ownerId !== userId) {
     throw new UserForbiddenError("User not authorized");
