@@ -44,10 +44,9 @@ export async function handlerBillMembersAdd(req: Request<{ billId: string }>, re
   const token = getBearerToken(req);
   const untrustedUserId = validateJWT(token, config.secret);
   const { billId } = req.params;
+  const newBillMemberEmail = req.body.email;
 
   await verifyBillOwnership(untrustedUserId, billId);
-
-  const newBillMemberEmail = req.body.email;
   if (!newBillMemberEmail) {
     throw new BadRequestError("Missing Required Field");
   }
@@ -67,7 +66,6 @@ export async function handlerBillMembersAdd(req: Request<{ billId: string }>, re
   if (!billMember) {
     throw new Error("Could not create bill member");
   }
-
   res.status(201).json(billMember);
 }
 
@@ -76,22 +74,21 @@ export async function handlerBillRemindersAdd(req: Request<{ billId: string }>, 
   const token = getBearerToken(req);
   const untrustedUserId = validateJWT(token, config.secret);
   const { billId } = req.params;
-  const daysBeforeDue = req.body.daysBeforeDue;
+  const { daysBeforeDue } = req.body;
+  
+  await verifyBillOwnership(untrustedUserId, billId);
   if (typeof daysBeforeDue !== "number" || daysBeforeDue < 0) {
     throw new BadRequestError("daysBeforeDue must be a non-negative number");
   }
-
-  await verifyBillOwnership(untrustedUserId, billId);
 
   const reminderRule = await addReminderRule({
     billId,
     daysBeforeDue,
   } satisfies NewReminderRule);
-
+  
   if (!reminderRule) {
     throw new Error("Could not create reminder rule");
   }
-
   res.status(201).json(reminderRule);
 }
 
@@ -104,10 +101,10 @@ export async function handlerMemberBillsGet(req: Request, res: Response) {
 }
 
 
-export async function handlerBillGet(req: Request, res: Response) {
+export async function handlerBillGet(req: Request<{ billId: string}>, res: Response) {
   const token = getBearerToken(req);
   validateJWT(token, config.secret);
-  const billId = req.params.billId as string;
+  const { billId } = req.params;
 
   const bill = await getBillWithRelations(billId);
   if (!bill) {
