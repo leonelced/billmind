@@ -10,7 +10,6 @@ import {
   createBill, 
   addBillMember, 
   addReminderRule, 
-  getBill, 
   getBillsByMember, 
   getBillWithRelations, 
   updateBill,
@@ -41,17 +40,17 @@ export async function handlerBillsCreate(req: Request, res: Response) {
 }
 
 
-export async function handlerBillMembersAdd(req: Request, res: Response) {
+export async function handlerBillMembersAdd(req: Request<{ billId: string }>, res: Response) {
   const token = getBearerToken(req);
   const untrustedUserId = validateJWT(token, config.secret);
-
-  const newBillMemberEmail = req.body.email;
-  const billId = req.params.billId as string;
-  if (!newBillMemberEmail || !billId) {
-    throw new BadRequestError("Missing Required Field");
-  }
+  const { billId } = req.params;
 
   await verifyBillOwnership(untrustedUserId, billId);
+
+  const newBillMemberEmail = req.body.email;
+  if (!newBillMemberEmail) {
+    throw new BadRequestError("Missing Required Field");
+  }
 
   // look up the user (new member)
   const userFound = await getUserByEmail(newBillMemberEmail);
@@ -73,21 +72,22 @@ export async function handlerBillMembersAdd(req: Request, res: Response) {
 }
 
 
-export async function handlerBillRemindersAdd(req: Request, res: Response) {
+export async function handlerBillRemindersAdd(req: Request<{ billId: string }>, res: Response) {
   const token = getBearerToken(req);
   const untrustedUserId = validateJWT(token, config.secret);
-  const newReminderRule: NewReminderRule = {
-    billId: req.params.billId as string,
-    daysBeforeDue: req.body.daysBeforeDue
-  };
+  const { billId } = req.params;
+  const daysBeforeDue = req.body.daysBeforeDue;
+  if (typeof daysBeforeDue !== "number" || daysBeforeDue < 0) {
+    throw new BadRequestError("daysBeforeDue must be a non-negative number");
+  }
 
-  if (!newReminderRule.billId || newReminderRule.daysBeforeDue == null) {
-    throw new BadRequestError("Missing Required Field");
-  }  
+  await verifyBillOwnership(untrustedUserId, billId);
 
-  await verifyBillOwnership(untrustedUserId, newReminderRule.billId);
+  const reminderRule = await addReminderRule({
+    billId,
+    daysBeforeDue,
+  } satisfies NewReminderRule);
 
-  const reminderRule = await addReminderRule(newReminderRule);
   if (!reminderRule) {
     throw new Error("Could not create reminder rule");
   }
