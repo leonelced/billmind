@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import type { BillParameters, UpdateBill } from "./helpers.js";
 import type { NewBill, NewBillMember, NewReminderRule } from "../../db/schema.js";
-import { BadRequestError, NotFoundError, UserForbiddenError } from "./errors.js";
-import { validateBillParams, verifyBillOwnership } from "./helpers.js";
+import { validateBillParams, verifyBillAccess, verifyBillOwnership } from "./helpers.js";
+import { BadRequestError, NotFoundError } from "./errors.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { getUserByEmail } from "../../db/queries/users.js";
 import { config } from "../../config.js";
@@ -10,8 +10,7 @@ import {
   createBill, 
   addBillMember, 
   addReminderRule, 
-  getBillsByMember, 
-  getBillWithRelations, 
+  getBillsByMember,  
   updateBill,
   deleteBill, 
 } from "../../db/queries/bills.js";
@@ -85,7 +84,7 @@ export async function handlerBillRemindersAdd(req: Request<{ billId: string }>, 
     billId,
     daysBeforeDue,
   } satisfies NewReminderRule);
-  
+
   if (!reminderRule) {
     throw new Error("Could not create reminder rule");
   }
@@ -103,13 +102,9 @@ export async function handlerMemberBillsGet(req: Request, res: Response) {
 
 export async function handlerBillGet(req: Request<{ billId: string}>, res: Response) {
   const token = getBearerToken(req);
-  validateJWT(token, config.secret);
+  const untrustedUserId = validateJWT(token, config.secret);
   const { billId } = req.params;
-
-  const bill = await getBillWithRelations(billId);
-  if (!bill) {
-    throw new NotFoundError(`Bill with id: ${billId} not found`);
-  }
+  const bill = await verifyBillAccess(untrustedUserId, billId);
   res.status(200).json(bill);
 }
 

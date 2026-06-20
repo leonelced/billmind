@@ -1,5 +1,5 @@
 import { type NewBill } from "../../db/schema.js";
-import { getBill } from "../../db/queries/bills.js";
+import { getBill, getBillWithRelations } from "../../db/queries/bills.js";
 import { 
   BadRequestError, 
   NotFoundError, 
@@ -80,4 +80,18 @@ export async function verifyBillOwnership(userId: string, billId: string) {
   if (bill.ownerId !== userId) {
     throw new UserForbiddenError("User not authorized");
   }
+}
+
+
+export async function verifyBillAccess(userId: string, billId: string) {
+  const bill = await getBillWithRelations(billId);
+  if (!bill) {
+    throw new NotFoundError(`Bill with id: ${billId} not found`);
+  }
+  const isOwner = bill.bill?.ownerId === userId;
+  const isMember = bill.members.some((member) => member.userId === userId);
+  if (!isOwner && !isMember) {
+    throw new UserForbiddenError("User not authorized");
+  }
+  return bill;
 }
