@@ -5,6 +5,9 @@ import {
   UserForbiddenError,
   NotFoundError
 } from "./errors.js";
+import { getBearerToken, validateJWT } from "./auth.js";
+import { config } from "../../config.js";
+
 
 export function errorMiddleWare(err: Error, _: Request, res: Response, __: NextFunction) {
   let statusCode = 500;
@@ -32,4 +35,11 @@ export function errorMiddleWare(err: Error, _: Request, res: Response, __: NextF
   res.status(statusCode).json({
     message
   });
+}
+
+
+export function requireAuth(req: Request, _: Response, next: NextFunction) {
+  const token = getBearerToken(req);
+  req.userId = validateJWT(token, config.secret);
+  next();
 }

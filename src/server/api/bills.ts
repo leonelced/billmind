@@ -3,9 +3,7 @@ import type { BillParameters, UpdateBill } from "./helpers.js";
 import type { NewBill, NewBillMember, NewReminderRule } from "../../db/schema.js";
 import { validateBillParams, verifyBillAccess, verifyBillOwnership } from "./helpers.js";
 import { BadRequestError, NotFoundError } from "./errors.js";
-import { getBearerToken, validateJWT } from "./auth.js";
 import { getUserByEmail } from "../../db/queries/users.js";
-import { config } from "../../config.js";
 import { 
   createBill, 
   addBillMember, 
@@ -17,8 +15,7 @@ import {
 
 
 export async function handlerBillsCreate(req: Request, res: Response) {
-  const token = getBearerToken(req);
-  const userId = validateJWT(token, config.secret);
+  const { userId } = req;
   const params: BillParameters = req.body;
   validateBillParams(params);
 
@@ -40,12 +37,11 @@ export async function handlerBillsCreate(req: Request, res: Response) {
 
 
 export async function handlerBillMembersAdd(req: Request<{ billId: string }>, res: Response) {
-  const token = getBearerToken(req);
-  const untrustedUserId = validateJWT(token, config.secret);
+  const { userId } = req;
   const { billId } = req.params;
   const newBillMemberEmail = req.body.email;
 
-  await verifyBillOwnership(untrustedUserId, billId);
+  await verifyBillOwnership(userId, billId);
   if (!newBillMemberEmail) {
     throw new BadRequestError("Missing Required Field");
   }
@@ -70,12 +66,11 @@ export async function handlerBillMembersAdd(req: Request<{ billId: string }>, re
 
 
 export async function handlerBillRemindersAdd(req: Request<{ billId: string }>, res: Response) {
-  const token = getBearerToken(req);
-  const untrustedUserId = validateJWT(token, config.secret);
+  const { userId } = req;
   const { billId } = req.params;
   const { daysBeforeDue } = req.body;
   
-  await verifyBillOwnership(untrustedUserId, billId);
+  await verifyBillOwnership(userId, billId);
   if (typeof daysBeforeDue !== "number" || daysBeforeDue < 0) {
     throw new BadRequestError("daysBeforeDue must be a non-negative number");
   }
@@ -93,27 +88,24 @@ export async function handlerBillRemindersAdd(req: Request<{ billId: string }>, 
 
 
 export async function handlerMemberBillsGet(req: Request, res: Response) {
-  const token = getBearerToken(req);
-  const userId = validateJWT(token, config.secret);
+  const { userId } = req;
   const bills = await getBillsByMember(userId);
   res.status(200).json(bills);
 }
 
 
 export async function handlerBillGet(req: Request<{ billId: string}>, res: Response) {
-  const token = getBearerToken(req);
-  const untrustedUserId = validateJWT(token, config.secret);
+  const { userId } = req;
   const { billId } = req.params;
-  const bill = await verifyBillAccess(untrustedUserId, billId);
+  const bill = await verifyBillAccess(userId, billId);
   res.status(200).json(bill);
 }
 
 
 export async function handlerBillsDelete(req: Request<{ billId: string}>, res: Response) {
-  const token = getBearerToken(req);
-  const untrustedUserId = validateJWT(token, config.secret);
+  const { userId } = req;
   const { billId } = req.params;
-  await verifyBillOwnership(untrustedUserId, billId);
+  await verifyBillOwnership(userId, billId);
 
   const deleted = await deleteBill(billId);
   if (!deleted) {
@@ -124,10 +116,9 @@ export async function handlerBillsDelete(req: Request<{ billId: string}>, res: R
 
 
 export async function handlerBillsUpdate(req: Request<{ billId: string}>, res: Response) {
-  const token = getBearerToken(req);
-  const untrustedUserId = validateJWT(token, config.secret);
+  const { userId } = req;
   const { billId } = req.params;
-  await verifyBillOwnership(untrustedUserId, billId);
+  await verifyBillOwnership(userId, billId);
   const params: BillParameters = req.body;
   validateBillParams(params);
 

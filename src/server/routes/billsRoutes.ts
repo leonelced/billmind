@@ -8,9 +8,11 @@ import {
   handlerBillsDelete,
   handlerBillsUpdate
 } from "../api/bills.js";
+import { requireAuth } from "../api/middleware.js";
 
 
 const router = Router();
+router.use(requireAuth);
 
 // POST/PUT Requests
 
