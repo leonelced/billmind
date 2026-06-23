@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { handlerLogin } from "../api/login.js";
-import { handlerRegister } from "../api/users.js";
+import { handlerUsersCreate } from "../api/users.js";
 import { handlerRefresh, handlerRevoke } from "../api/refresh.js";
 
 
@@ -9,7 +9,7 @@ const router = Router();
 
 router.post("/register", async (req, res, next) => {
   try {
-    await handlerRegister(req, res);
+    await handlerUsersCreate(req, res);
   } catch (err) {
     next(err); // Pass the error to the errorMiddleware
   }

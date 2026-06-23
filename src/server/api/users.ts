@@ -8,7 +8,7 @@ import { hashPassword } from "./auth.js";
 export type UserResponse = Omit<User, "passwordHash">
 
 
-export async function handlerRegister(req: Request, res: Response) {
+export async function handlerUsersCreate(req: Request, res: Response) {
   type parameters = {
     username: string;
     email: string;
