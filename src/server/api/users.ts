@@ -34,7 +34,6 @@ export async function handlerUsersCreate(req: Request, res: Response) {
   if (!user) {
     throw new Error(`User ${params.username} was not created.`);
   }
-  console.log(`The user ${user.username} was created successfully!`);
 
   res.status(201).json({
     id: user.id,
@@ -45,7 +44,7 @@ export async function handlerUsersCreate(req: Request, res: Response) {
 }
 
 
-export async function handlerUsersUpdate(req: Request, res: Response) { // TODO: test ********************************
+export async function handlerUsersUpdate(req: Request, res: Response) {
   type parameters = {
     username: string;
     email: string;
