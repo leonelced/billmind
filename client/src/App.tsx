@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NewBill from './pages/NewBill';
 import Bill from './pages/Bill';
+import UpdateUser from './pages/UpdateUser';
 import Navigation from './components/Navbar';
 import { isAuthenticated } from './utils/auth';
 document.documentElement.classList.add("dark");
@@ -37,6 +38,7 @@ function AppContent() {
         <Route path='/bills/new' element={<ProtectedRoute><NewBill /></ProtectedRoute>}/>  
         <Route path='/bills/:id' element={<ProtectedRoute><Bill /></ProtectedRoute>}/>  
         <Route path='*' element={<Navigate to={isAuthenticated() ? "/dashboard" : "/"}/>} />
+        <Route path='/update' element={<ProtectedRoute><UpdateUser /></ProtectedRoute>}/>  
       </Routes>
     </div>
   );

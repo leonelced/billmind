@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Label } from "#components/ui/label";
 import { Input } from "#components/ui/input";
@@ -7,12 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { apiFetch } from "../utils/auth";
 
 
-export default function UpdateUser() {       // TODO: fix this file ************************************************8
+export default function UpdateUser() {       // TODO: refactor this file ************************************************8
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true); 
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.SubmitEvent) {

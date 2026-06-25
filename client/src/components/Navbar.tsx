@@ -8,6 +8,7 @@ export default function Navigation() {
   const location = useLocation();
   const hideDashboardLink = ["/dashboard"].includes(location.pathname);
   const hideNewBillButton = ["/bills/new"].includes(location.pathname);
+  const hideUpdateUserButton = ["/update"].includes(location.pathname);
 
   async function handleLogout() {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -26,6 +27,9 @@ export default function Navigation() {
       </Button>
       <Button variant="ghost">
         {!hideNewBillButton && <Link to="bills/new">+ New Bill</Link>}
+      </Button>
+      <Button variant="ghost">
+        {!hideUpdateUserButton && <Link to="update">Update User Info</Link>}
       </Button>
       <Button onClick={handleLogout} variant="ghost">
         Logout
