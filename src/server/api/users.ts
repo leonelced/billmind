@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
 import type { NewUser, User } from "../../db/schema.js";
-import { createUser, updateUser } from "../../db/queries/users.js";
-import { BadRequestError } from "./errors.js";
-import { hashPassword } from "./auth.js";
+import { createUser, deleteUser, getUserById, updateUser } from "../../db/queries/users.js";
+import { BadRequestError, NotFoundError, UserNotAuthenticatedError } from "./errors.js";
+import { checkPasswordHash, hashPassword } from "./auth.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../../config.js";
+import { handlerRevoke } from "./refresh.js";
 
 
 export type UserResponse = Omit<User, "passwordHash">
@@ -71,4 +72,36 @@ export async function handlerUsersUpdate(req: Request, res: Response) {
     email: user.email, 
     createdAt: user.createdAt
   } satisfies UserResponse);
+}
+
+
+export async function handlerUsersDelete(req: Request, res: Response) { // TODO: change to soft-delete
+  type parameters = {
+    password: string;
+  }
+
+  const accessToken = getBearerToken(req); 
+  const userId = validateJWT(accessToken, config.secret);
+
+  const params: parameters = req.body;
+  if (!params.password) {
+    throw new BadRequestError("Password confirmation required");
+  }
+
+  const user = await getUserById(userId);
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  const matching = await checkPasswordHash(params.password, user.passwordHash);
+  if (!matching) {
+    throw new UserNotAuthenticatedError("Incorrect password");
+  }
+
+  const deleted = await deleteUser(userId);
+  if (!deleted) {
+    throw new Error(`User ${userId} was not deleted.`);
+  }
+  
+  res.status(204).send();
 }

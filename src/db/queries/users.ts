@@ -17,6 +17,15 @@ export async function getUserByEmail(email: string) {
 }
 
 
+export async function getUserById(id: string) {
+  const [result] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id));
+  return result;
+}
+
+
 export async function updateUser(id: string, username: string, email: string, passwordHash: string) {
   const [result] = await db
     .update(users)
@@ -25,6 +34,15 @@ export async function updateUser(id: string, username: string, email: string, pa
       email,
       passwordHash
     })
+    .where(eq(users.id, id))
+    .returning();
+  return result;
+}
+
+
+export async function deleteUser(id: string) {
+  const [result] = await db
+    .delete(users)
     .where(eq(users.id, id))
     .returning();
   return result;
