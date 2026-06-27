@@ -86,6 +86,11 @@ export default function UserForm(props: UserFormProps) {
                 value={passwordConfirmation} 
                 onChange={(e) => setPasswordConfirmation(e.target.value)} 
               />
+              {
+                passwordConfirmation &&
+                password !== passwordConfirmation &&
+                (<p className="text-sm text-red-500">Passwords do not match</p>)
+              }
             </div>
             { error && <p>{error}</p> }
             <Button>{props.submitBtnName}</Button>
