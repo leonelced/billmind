@@ -20,11 +20,18 @@ export default function UserForm(props: UserFormProps) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
+    setError("");
+    
+    if (password !== passwordConfirmation) {
+      setError("Passwords do not match");
+      return;
+    }
     try {
       const response = await apiFetch(props.path, { 
         method: props.reqMethod, 
@@ -49,7 +56,7 @@ export default function UserForm(props: UserFormProps) {
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <Label>username</Label>
+              <Label>Username</Label>
               <Input 
                 type="text" 
                 value={username} 
@@ -57,7 +64,7 @@ export default function UserForm(props: UserFormProps) {
               />
             </div>
             <div>
-              <Label>email</Label>
+              <Label>Email</Label>
               <Input 
                 type="email" 
                 value={email} 
@@ -65,11 +72,19 @@ export default function UserForm(props: UserFormProps) {
               />
             </div>
             <div>
-              <Label>password</Label>
+              <Label>Password</Label>
               <Input 
                 type="password" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
+              />
+            </div>
+            <div>
+              <Input 
+                placeholder="Confirm Password"
+                type="password" 
+                value={passwordConfirmation} 
+                onChange={(e) => setPasswordConfirmation(e.target.value)} 
               />
             </div>
             { error && <p>{error}</p> }
