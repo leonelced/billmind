@@ -5,7 +5,7 @@ import { BadRequestError, NotFoundError, UserNotAuthenticatedError } from "./err
 import { checkPasswordHash, hashPassword } from "./auth.js";
 import { getBearerToken, validateJWT } from "./auth.js";
 import { config } from "../../config.js";
-import { handlerRevoke } from "./refresh.js";
+import { validatePassword } from "./helpers.js";
 
 
 export type UserResponse = Omit<User, "passwordHash">
@@ -22,6 +22,8 @@ export async function handlerUsersCreate(req: Request, res: Response) {
   if (!params.username || !params.email || !params.password) {
     throw new BadRequestError("Missing required fields");
   }
+
+  validatePassword(params.password); // test this tomorrow ***********************************
 
   const passwordHash = await hashPassword(params.password);
 
