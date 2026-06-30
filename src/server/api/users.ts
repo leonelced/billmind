@@ -23,7 +23,7 @@ export async function handlerUsersCreate(req: Request, res: Response) {
     throw new BadRequestError("Missing required fields");
   }
 
-  validatePassword(params.password); // test this tomorrow ***********************************
+  validatePassword(params.password);
 
   const passwordHash = await hashPassword(params.password);
 
