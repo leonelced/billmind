@@ -5,6 +5,7 @@ import { Input } from "#components/ui/input";
 import { Button } from "#components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { apiFetch, validatePassword } from "../utils/auth";
+import { Eye, EyeOff } from "lucide-react"
 
 
 export type UserFormProps = {
@@ -22,6 +23,7 @@ export default function UserForm(props: UserFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -81,11 +83,20 @@ export default function UserForm(props: UserFormProps) {
             </div>
             <div>
               <Label>Password</Label>
-              <Input 
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-              />
+              <div className="relative">
+                <Input 
+                  type={showPassword ? "text" : "password"} 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
             <div>
               <Input 
