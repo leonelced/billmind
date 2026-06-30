@@ -5,7 +5,8 @@ import { Input } from "#components/ui/input";
 import { Button } from "#components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { apiFetch, validatePassword } from "../utils/auth";
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react";
+import { Link } from "react-router-dom";
 
 
 export type UserFormProps = {
@@ -120,6 +121,12 @@ export default function UserForm(props: UserFormProps) {
             <Button>{props.submitBtnName}</Button>
           </form>
         </CardContent>
+        {
+          props.isRegistration && 
+          <p className="text-sm text-center text-gray-500">
+            Already have an account? <Link to="/login" className="underline">Log in</Link>
+          </p>
+        }
       </Card>
     </div>    
   );

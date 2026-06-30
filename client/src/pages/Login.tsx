@@ -4,6 +4,7 @@ import { Button } from "#components/ui/button";
 import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
+import { Link } from "react-router-dom";
 
 
 interface LoginResponse {
@@ -44,7 +45,7 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
+          <CardTitle>Log In</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -60,6 +61,9 @@ export default function Login() {
             <Button type="submit">Login</Button>
           </form>
         </CardContent>
+        <p className="text-sm text-center text-gray-500">
+          Don't have an account? <Link to="/register" className="underline">Create one</Link>
+        </p>
       </Card>
     </div>
   );
