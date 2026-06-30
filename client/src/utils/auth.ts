@@ -41,3 +41,15 @@ async function refreshFetch(url: string, options: RequestInit = {}) {
     },
   });
 }
+
+
+export function validatePassword(password: string): string | null { // for new users
+  if (password.length < 12) {
+    return"Password must be at least 12 characters long";
+  }
+  if (password.length > 64) {
+    return "Password must be at most 64 characters long";
+  }
+  // check against breached-password list here (HIBP k-anonymity API)
+  return null;
+}

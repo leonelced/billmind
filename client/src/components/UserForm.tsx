@@ -4,7 +4,7 @@ import { Label } from "#components/ui/label";
 import { Input } from "#components/ui/input";
 import { Button } from "#components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
-import { apiFetch } from "../utils/auth";
+import { apiFetch, validatePassword } from "../utils/auth";
 
 
 export type UserFormProps = {
@@ -13,6 +13,7 @@ export type UserFormProps = {
   redirect: string;
   reqMethod: string;
   submitBtnName: string;
+  isRegistration?: boolean;
 }
 
 
@@ -31,6 +32,13 @@ export default function UserForm(props: UserFormProps) {
     if (password !== passwordConfirmation) {
       setError("Passwords do not match");
       return;
+    }
+    if (props.isRegistration) {
+      const err = validatePassword(password);
+      if (err) {
+        setError(err);
+        return;
+      }
     }
     try {
       const response = await apiFetch(props.path, { 
@@ -86,6 +94,11 @@ export default function UserForm(props: UserFormProps) {
                 value={passwordConfirmation} 
                 onChange={(e) => setPasswordConfirmation(e.target.value)} 
               />
+              {
+                password && 
+                password.length < 12 &&
+                (<p className="text-sm text-red-500">Password must be at least 12 characters long</p>)
+              }
               {
                 passwordConfirmation &&
                 password !== passwordConfirmation &&

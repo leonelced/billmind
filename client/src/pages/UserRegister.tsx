@@ -8,7 +8,8 @@ export default function Register() {
     title: "Create your account",
     redirect: "/login",
     reqMethod: "POST",
-    submitBtnName: "Create Account"
+    submitBtnName: "Create Account",
+    isRegistration: true,
   }
 
   return (
