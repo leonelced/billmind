@@ -110,13 +110,10 @@ export async function verifyBillAccess(userId: string, billId: string) {
 // used in users.ts - create new user:
 
 export function validatePassword(password: string) {
-  if (password.length < 8) {
+  if (password.length < 12) {
     throw new BadRequestError("Password must be at least 8 characters long");
   }
   if (password.length > 64) {
     throw new BadRequestError("Password must be at most 64 characters long");
-  }
-  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password)) {
-    throw new BadRequestError("Password must contain uppercase, lowercase, and a number");
   }
 }
