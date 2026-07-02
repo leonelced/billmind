@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from './pages/Home';
 import Login from './pages/Login';
 import UserRegister from './pages/UserRegister';
@@ -23,12 +23,9 @@ function PublicRoute({ children }: { children: React.ReactNode}) {
 }
 
 function AppContent() {
-  const location = useLocation();
-  const hideNavbar = ["/", "/login", "/register"].includes(location.pathname);
   return (
     <div>
-      <h1>BillMind</h1>
-      {isAuthenticated() && !hideNavbar && <Navigation/>}
+      <Navigation/>
       <br />
       <Routes>
         <Route path='/' element={<PublicRoute><Home /></PublicRoute>}/>  
