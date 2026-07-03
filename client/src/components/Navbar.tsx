@@ -31,7 +31,16 @@ export default function Navigation() {
   
   return (
     <div className="flex items-center justify-between px-4 py-2">
+
       <h1 className="text-xl font-bold">BillMind</h1>
+
+      {!isAuthenticated() && hideNavButtons && (
+        <div>
+          <Button variant="ghost" onClick={() => navigate("/login")}>Login</Button>
+          <Button variant="ghost" onClick={() => navigate("/register")}>Register</Button>
+        </div>
+      )}
+      
       {isAuthenticated() && !hideNavButtons && (
         <div>
           <Button variant="ghost">

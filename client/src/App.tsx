@@ -31,11 +31,12 @@ function AppContent() {
         <Route path='/' element={<PublicRoute><Home /></PublicRoute>}/>  
         <Route path='/register' element={<PublicRoute><UserRegister /></PublicRoute>}/>  
         <Route path='/login' element={<PublicRoute><Login /></PublicRoute>}/>  
+        
         <Route path='/dashboard' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path='/bills/new' element={<ProtectedRoute><BillNew /></ProtectedRoute>}/>  
         <Route path='/bills/:id' element={<ProtectedRoute><Bill /></ProtectedRoute>}/>  
-        <Route path='*' element={<Navigate to={isAuthenticated() ? "/dashboard" : "/"}/>} />
         <Route path='/update' element={<ProtectedRoute><UserUpdate /></ProtectedRoute>}/>  
+        <Route path='*' element={<Navigate to={isAuthenticated() ? "/dashboard" : "/"}/>} />
       </Routes>
     </div>
   );
