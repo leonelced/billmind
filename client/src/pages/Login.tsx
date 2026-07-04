@@ -5,6 +5,7 @@ import { Input } from "#components/ui/input";
 import { Label } from "#components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 
 interface LoginResponse {
@@ -43,8 +44,11 @@ export default function Login() {
 
   return (
     <div className="flex-1 flex items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
+      <Card className="w-full max-w-sm pt-0">
+        <Link to="/" className="p-4 inline-block text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-5 w-5" />
+        </Link>
+        <CardHeader className="-mt-4">
           <CardTitle>Log In</CardTitle>
         </CardHeader>
         <CardContent>
