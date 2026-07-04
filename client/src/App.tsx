@@ -26,7 +26,6 @@ function AppContent() {
   return (
     <div>
       <Navigation/>
-      <br />
       <Routes>
         <Route path='/' element={<PublicRoute><Home /></PublicRoute>}/>  
         <Route path='/register' element={<PublicRoute><UserRegister /></PublicRoute>}/>  
