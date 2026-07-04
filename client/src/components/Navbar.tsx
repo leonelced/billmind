@@ -36,8 +36,12 @@ export default function Navigation() {
 
       {!isAuthenticated() && hideNavButtons && (
         <div>
-          <Button variant="ghost" onClick={() => navigate("/login")}>Login</Button>
-          <Button variant="ghost" onClick={() => navigate("/register")}>Register</Button>
+          <Button variant="ghost" asChild>
+            <Link to="/login">Log In</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link to="/register">Create Account</Link>
+          </Button>
         </div>
       )}
       
