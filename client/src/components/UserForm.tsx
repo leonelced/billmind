@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { apiFetch, validatePassword } from "../utils/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 
 export type UserFormProps = {
@@ -60,8 +61,12 @@ export default function UserForm(props: UserFormProps) {
 
   return (
     <div className="flex-1 flex items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
+      <Card className="w-full max-w-sm pt-0">
+        <Link to={props.isRegistration ? "/" : "/dashboard"} 
+          className="p-4 inline-block text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-5 w-5" />
+        </Link>
+        <CardHeader className="-mt-4">
           <CardTitle>{props.title}</CardTitle>
         </CardHeader>
         <CardContent>
