@@ -17,6 +17,7 @@ export default function Navigation() {
   const hideDashboardLink = ["/dashboard"].includes(location.pathname);
   const hideNewBillButton = ["/bills/new"].includes(location.pathname);
   const hideNavButtons = ["/", "/login", "/register"].includes(location.pathname);
+  const hideAuthButtons = ["/login", "/register"].includes(location.pathname);
 
 
   async function handleLogout() {
@@ -34,7 +35,7 @@ export default function Navigation() {
 
       <h1 className="text-xl font-bold">BillMind</h1>
 
-      {!isAuthenticated() && hideNavButtons && (
+      {!isAuthenticated() && !hideAuthButtons && (
         <div>
           <Button variant="ghost" asChild>
             <Link to="/login">Log In</Link>
