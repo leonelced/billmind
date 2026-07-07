@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { Badge } from "#components/ui/badge";
 import { formatDueDate } from "../utils/format.js";
-import { apiFetch } from "../utils/auth.js";
+import { fetchBills } from "../utils/bills.js";
 
 
 export default function BillsMonthly() { 
@@ -13,30 +13,20 @@ export default function BillsMonthly() {
   const [bills, setBills] = useState<Bill[]>([]);
   const url: string = "/api/bills/";
 
-  // this runs once when the component first renders
   useEffect(() => {
-    async function fetchBills() {
+    async function loadBills() {
       try {
-        const response = await apiFetch(url, { method: "GET" });
-        if (!response.ok) {
-          throw new Error("Request failed");          
-        }
-        const data = await response.json();
-        const monthlyBills: Bill[] = [];
-        for (const bill of data) {
-          if (bill.recurrence === "monthly") {
-            monthlyBills.push(bill);
-          }
-        }
+        const bills: Bill[] = await fetchBills(url);
+        const monthlyBills = bills.filter(bill => bill.recurrence === "monthly")
         setBills(monthlyBills);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
+      } catch(err) {
+        setError(err instanceof Error ? err.message : "Something went wrong")
       } finally {
         setLoading(false);
       }
     }
-    fetchBills();
-  }, []); // the [] means "only run once on mount"
+    loadBills();
+  }, []); // [] === "only run once on mount"
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
