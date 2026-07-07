@@ -69,7 +69,7 @@ export default function BillForm({
     
   }
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex-1 flex items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>{title}</CardTitle>
