@@ -6,6 +6,7 @@ import UserRegister from './pages/UserRegister';
 import Dashboard from './pages/Dashboard';
 import BillNew from './pages/BillNew';
 import Bill from './pages/Bill';
+import BillsMonthly from './pages/BillsMonthly';
 import UserUpdate from './pages/UserUpdate';
 import Navigation from './components/Navbar';
 import { isAuthenticated } from './utils/auth';
@@ -32,6 +33,8 @@ function AppContent() {
         <Route path='/login' element={<PublicRoute><Login /></PublicRoute>}/>  
         
         <Route path='/dashboard' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path='/bills/monthly' element={<ProtectedRoute><BillsMonthly /></ProtectedRoute>}/>  
+
         <Route path='/bills/new' element={<ProtectedRoute><BillNew /></ProtectedRoute>}/>  
         <Route path='/bills/:id' element={<ProtectedRoute><Bill /></ProtectedRoute>}/>  
         <Route path='/update' element={<ProtectedRoute><UserUpdate /></ProtectedRoute>}/>  

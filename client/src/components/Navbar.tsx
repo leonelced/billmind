@@ -51,9 +51,15 @@ export default function Navigation() {
           <Button variant="ghost">
             {!hideDashboardLink && <Link to="/dashboard">Dashboard</Link>}
           </Button>
+
+          <Button variant="ghost">
+            {!hideNewBillButton && <Link to="bills/monthly">Monthly</Link>}
+          </Button>
+
           <Button variant="ghost">
             {!hideNewBillButton && <Link to="bills/new">+ New Bill</Link>}
           </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost">
