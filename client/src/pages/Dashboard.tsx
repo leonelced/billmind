@@ -11,13 +11,12 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [bills, setBills] = useState<Bill[]>([]);
-  const url: string = "/api/bills/";
 
   // this runs once when the component first renders
   useEffect(() => {
     async function loadBills() {
       try {
-        const bills: Bill[] = await fetchBills(url);
+        const bills: Bill[] = await fetchBills();
         setBills(bills);
       } catch(err) {
         setError(err instanceof Error ? err.message : "Something went wrong")

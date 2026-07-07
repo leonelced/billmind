@@ -11,12 +11,11 @@ export default function BillsMonthly() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [bills, setBills] = useState<Bill[]>([]);
-  const url: string = "/api/bills/";
 
   useEffect(() => {
     async function loadBills() {
       try {
-        const bills: Bill[] = await fetchBills(url);
+        const bills: Bill[] = await fetchBills();
         const monthlyBills = bills.filter(bill => bill.recurrence === "monthly")
         setBills(monthlyBills);
       } catch(err) {
