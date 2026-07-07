@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { Badge } from "#components/ui/badge";
 import { formatDueDate } from "../utils/format.js";
-import { apiFetch } from "../utils/auth.js";
+import { fetchBills } from "../utils/bills.js";
 
 
 export default function Dashboard() { 
@@ -15,21 +15,17 @@ export default function Dashboard() {
 
   // this runs once when the component first renders
   useEffect(() => {
-    async function fetchBills() {
+    async function loadBills() {
       try {
-        const response = await apiFetch(url, { method: "GET" });
-        if (!response.ok) {
-          throw new Error("Request failed");          
-        }
-        const data = await response.json();
-        setBills(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        const bills: Bill[] = await fetchBills(url);
+        setBills(bills);
+      } catch(err) {
+        setError(err instanceof Error ? err.message : "Something went wrong")
       } finally {
         setLoading(false);
       }
     }
-    fetchBills();
+    loadBills();
   }, []); // the [] means "only run once on mount"
 
   return (
