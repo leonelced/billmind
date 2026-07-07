@@ -49,15 +49,19 @@ export default function Navigation() {
       {isAuthenticated() && !hideNavButtons && (
         <div>
           <Button variant="ghost">
-            {!hideDashboardLink && <Link to="/dashboard">Dashboard</Link>}
+            <Link to="/dashboard">Dashboard</Link>
           </Button>
 
           <Button variant="ghost">
-            {!hideNewBillButton && <Link to="bills/monthly">Monthly</Link>}
+            <Link to="bills/monthly">Monthly</Link>
           </Button>
 
           <Button variant="ghost">
-            {!hideNewBillButton && <Link to="bills/new">+ New Bill</Link>}
+            <Link to="bills/yearly">Yearly</Link>
+          </Button>
+
+          <Button variant="ghost">
+            <Link to="bills/new">+ New Bill</Link>
           </Button>
 
           <DropdownMenu>
