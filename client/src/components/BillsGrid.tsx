@@ -22,6 +22,8 @@ export function BillsGrid(
     currency: 'USD',
   });
 
+  const dashboardPage = ["/dashboard"].includes(location.pathname);
+
   return (
     <div className="p-4 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -47,7 +49,7 @@ export function BillsGrid(
           </Card>
         ))}
       </div>
-      {!loading && !error && bills.length > 1 && (
+      {!loading && !error && bills.length > 1 && !dashboardPage && (
         <Card className="bg-muted/50">
           <CardContent className="flex items-center justify-between py-4">
             <span className="text-sm font-medium text-muted-foreground">
