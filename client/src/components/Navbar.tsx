@@ -14,11 +14,14 @@ import { isAuthenticated } from "../utils/auth";
 export default function Navigation() {
   const navigate = useNavigate();
   const location = useLocation();
-  const hideDashboardLink = ["/dashboard"].includes(location.pathname);
-  const hideNewBillButton = ["/bills/new"].includes(location.pathname);
   const hideNavButtons = ["/", "/login", "/register"].includes(location.pathname);
   const hideAuthButtons = ["/login", "/register"].includes(location.pathname);
-
+  const navLinks = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/bills/monthly", label: "Monthly" },
+  { to: "/bills/yearly", label: "Yearly" },
+  { to: "/bills/new", label: "+ New Bill" },
+];
 
   async function handleLogout() {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -48,33 +51,37 @@ export default function Navigation() {
       
       {isAuthenticated() && !hideNavButtons && (
         <div>
-          <Button variant="ghost">
-            <Link to="/dashboard">Dashboard</Link>
-          </Button>
-
-          <Button variant="ghost">
-            <Link to="bills/monthly">Monthly</Link>
-          </Button>
-
-          <Button variant="ghost">
-            <Link to="bills/yearly">Yearly</Link>
-          </Button>
-
-          <Button variant="ghost">
-            <Link to="bills/new">+ New Bill</Link>
-          </Button>
+          {navLinks.map(({ to, label }) => {
+            const active = location.pathname === to;
+            return (
+              <Button key={to} variant="ghost" asChild
+                className={`rounded-full ${ active
+                    ? "text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Link to={to}>{label}</Link>
+              </Button>
+            );
+          })}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost">
+              <Button variant="ghost" 
+                className="text-muted-foreground hover:text-foreground"
+              >
                 Account <ChevronDown className="ml-1 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild 
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <Link to="update">Update</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem onClick={handleLogout} 
+                className="text-muted-foreground hover:text-foreground"
+              >
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
