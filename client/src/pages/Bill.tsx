@@ -103,9 +103,7 @@ export default function Bill() {
       if (!response.ok) throw new Error("Failed to delete");
       navigate("/dashboard");
     } catch (err) {
-      setError("Could not delete bill")
-    } finally {
-      await fetchBill();
+      setError("Could not delete bill");
     }
   }
 
