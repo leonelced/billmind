@@ -1,7 +1,7 @@
 import { apiFetch } from "./auth";
 
 
-export async function fetchBills() {
+export async function fetchBills() { // not being used in useBills anymore
   const url: string = "/api/bills/";
   try {
     const response = await apiFetch(url, { method: "GET" });
