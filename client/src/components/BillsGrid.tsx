@@ -12,14 +12,16 @@ export function BillsGrid(
   }
 ) {
   function getTotal() {
-    const total = bills.reduce((total, bill) => {
+    return bills.reduce((total, bill) => {
       return bill.amount ? total + parseFloat(bill.amount) : total;
     }, 0);
-    return total.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD"
-    });
   }
+
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
   return (
     <div className="p-4 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -35,7 +37,7 @@ export function BillsGrid(
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{bill.amount ? `$${bill.amount}` : "Unknown"}</p>
+              <p>{bill.amount ? `${formatter.format(parseFloat(bill.amount))}` : "Unknown"}</p>
               <p>{formatDueDate(bill)}</p>
               <Badge>{bill.recurrence}</Badge>
               <Badge variant={bill.isPaid ? "default" : "destructive"}>
@@ -52,7 +54,7 @@ export function BillsGrid(
               Total across {bills.length} bills
             </span>
             <span className="text-2xl font-bold tracking-tight">
-              {getTotal()}
+              {formatter.format(getTotal())}
             </span>
           </CardContent>
         </Card>
