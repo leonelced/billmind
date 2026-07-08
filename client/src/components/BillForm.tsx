@@ -77,20 +77,42 @@ export default function BillForm({
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col">
             <div>
-              <Label>Bill Name</Label>
-              <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            <br />
-            <div>
-              <Label>Amount</Label>
-              <Input type="number" value={amount ?? ""}
-                onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : undefined)} 
+              <Label htmlFor="bill-name">Bill Name</Label>
+              <Input 
+                id="bill-name" 
+                name="name" 
+                autoComplete="off"
+                type="text" 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
               />
             </div>
             <br />
             <div>
-              <select value={recurrence} onChange={(e) =>   
-                setRecurrence(e.target.value as Recurrence)}>
+              <Label htmlFor="bill-amount">Amount</Label>
+              <Input 
+                id="bill-amount" 
+                name="amount"
+                type="number" 
+                value={amount ?? ""}
+                onChange={
+                  (e) => setAmount(
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                } 
+              />
+            </div>
+            <br />
+            <div>
+              <select 
+                id="bill-recurrence" 
+                name="recurrence"
+                aria-label="Recurrence" 
+                value={recurrence} 
+                onChange={
+                  (e) => setRecurrence(e.target.value as Recurrence)
+                }
+              >
                 <option value="">Select recurrence</option>
                 <option value="once">Once</option>
                 <option value="monthly">Monthly</option>
@@ -101,34 +123,76 @@ export default function BillForm({
 
             { recurrence === "once" && 
               <div>
-                <Label>Due Date</Label>
-                <Input type="date" value={dueDate ?? ""} onChange={(e) => setDueDate(e.target.value)} />
+                <Label htmlFor="bill-due-date">Due Date</Label>
+                <Input 
+                  id="bill-due-date" 
+                  name="due-date"
+                  type="date" 
+                  value={dueDate ?? ""} 
+                  onChange={(e) => setDueDate(e.target.value)} 
+                />
               </div>
             }    
             { recurrence === "monthly" && 
               <div>
-                <Label>Due Day</Label>
-                <Input type="number" value={dueDayOfMonth ?? ""} min={1} max={31}
-                  onChange={(e) => setDueDayOfMonth(e.target.value ? Number(e.target.value) : undefined)}
+                <Label htmlFor="bill-due-day">Due Day</Label>
+                <Input 
+                  id="bill-due-day" 
+                  name="due-day"
+                  type="number" 
+                  value={dueDayOfMonth ?? ""} 
+                  min={1} 
+                  max={31}
+                  onChange={
+                    (e) => setDueDayOfMonth(
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
                 />
               </div>
             }               
             { recurrence === "yearly" && 
               <div>
-                <Label>Due Day</Label>
-                <Input type="number" value={dueDayOfMonth ?? ""} min={1} max={31}
-                  onChange={(e) => setDueDayOfMonth(e.target.value ? Number(e.target.value) : undefined)}
+                <Label htmlFor="bill-due-day">Due Day</Label>
+                <Input 
+                  id="bill-due-day" 
+                  name="due-day"
+                  type="number" 
+                  value={dueDayOfMonth ?? ""} 
+                  min={1} 
+                  max={31}
+                  onChange={
+                    (e) => setDueDayOfMonth(
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
                 />
-                <Label>Due Month</Label>
-                <Input type="number" value={dueMonth ?? ""} min={1} max={12}
-                  onChange={(e) => setDueMonth(e.target.value ? Number(e.target.value) : undefined)}
+                <Label htmlFor="bill-due-month">Due Month</Label>
+                <Input 
+                  id="bill-due-month" 
+                  name="due-month"
+                  type="number" 
+                  value={dueMonth ?? ""} 
+                  min={1} 
+                  max={12}
+                  onChange={
+                    (e) => setDueMonth(
+                      e.target.value ? Number(e.target.value) : undefined
+                    )
+                  }
                 />
               </div>
             }    
 
             {/* Show only when editing bill */}
             {isPaid !== undefined && (
-              <select value={isPaid ? "true" : "false"} onChange={(e) => setIsPaid(e.target.value === "true")}>
+              <select 
+                id="bill-is-paid" 
+                name="isPaid"
+                aria-label="Is Paid?" 
+                value={isPaid ? "true" : "false"} 
+                onChange={(e) => setIsPaid(e.target.value === "true")}
+              >
                 <option value="false">Unpaid</option>
                 <option value="true">Paid</option>
               </select>
