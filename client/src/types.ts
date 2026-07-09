@@ -1,4 +1,10 @@
-export type Recurrence = "once" | "monthly" | "yearly";
+export const RECURRENCE = {
+  ONCE: "once",
+  MONTHLY: "monthly",
+  YEARLY: "yearly"
+} as const;
+
+export type Recurrence = typeof RECURRENCE[keyof typeof RECURRENCE];
 
 export interface Bill {
   id: string,

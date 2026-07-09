@@ -4,7 +4,7 @@ import { Label } from "#components/ui/label";
 import { Input } from "#components/ui/input";
 import { Button } from "#components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
-import type { Bill, Recurrence } from "../types";
+import { RECURRENCE, type Bill, type Recurrence } from "../types";
 import { apiFetch } from "../utils/auth";
 
 
@@ -45,11 +45,11 @@ export default function BillForm({
         amount,
         isPaid
       }
-      if (recurrence === "once") {
+      if (recurrence === RECURRENCE.ONCE) {
         body.dueDate = dueDate;
-      } else if (recurrence === "monthly") {
+      } else if (recurrence === RECURRENCE.MONTHLY) {
         body.dueDayOfMonth = dueDayOfMonth;
-      } else if (recurrence === "yearly") {
+      } else if (recurrence === RECURRENCE.YEARLY) {
         body.dueDayOfMonth = dueDayOfMonth;
         body.dueMonth = dueMonth;
       }
@@ -114,14 +114,14 @@ export default function BillForm({
                 }
               >
                 <option value="">Select recurrence</option>
-                <option value="once">Once</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
+                <option value={RECURRENCE.ONCE}>Once</option>
+                <option value={RECURRENCE.MONTHLY}>Monthly</option>
+                <option value={RECURRENCE.YEARLY}>Yearly</option>
               </select>
             </div>   
             <br />     
 
-            { recurrence === "once" && 
+            { recurrence === RECURRENCE.ONCE && 
               <div>
                 <Label htmlFor="bill-due-date">Due Date</Label>
                 <Input 
@@ -133,7 +133,7 @@ export default function BillForm({
                 />
               </div>
             }    
-            { recurrence === "monthly" && 
+            { recurrence === RECURRENCE.MONTHLY && 
               <div>
                 <Label htmlFor="bill-due-day">Due Day</Label>
                 <Input 
@@ -151,7 +151,7 @@ export default function BillForm({
                 />
               </div>
             }               
-            { recurrence === "yearly" && 
+            { recurrence === RECURRENCE.YEARLY && 
               <div>
                 <Label htmlFor="bill-due-day">Due Day</Label>
                 <Input 
