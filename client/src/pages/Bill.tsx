@@ -165,6 +165,8 @@ export default function Bill() {
             ))}
             <form onSubmit={handleAddMember}>
               <Input 
+                id="member-email"
+                aria-label="Add member email"
                 type="email" 
                 value={newMemberEmail} 
                 onChange={(e) => setNewMemberEmail(e.target.value)} 
@@ -189,6 +191,8 @@ export default function Bill() {
             </div>
             <form onSubmit={handleAddRule}>
               <Input 
+                id="rule-days"
+                aria-label="Days before due"
                 type="number" 
                 min={0} 
                 value={daysBeforeDue ?? ""} 
