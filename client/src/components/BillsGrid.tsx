@@ -5,10 +5,11 @@ import { Badge } from "#components/ui/badge";
 import { formatDueDate } from "../utils/format.js";
 
 export function BillsGrid(
-  {bills, loading, error}: {
+  {bills, loading, error, showTotal}: {
     bills: Bill[],
     loading: boolean,
-    error: string
+    error: string,
+    showTotal: boolean
   }
 ) {
   function getTotal() {
@@ -21,8 +22,6 @@ export function BillsGrid(
     style: 'currency',
     currency: 'USD',
   });
-
-  const dashboardPage = ["/dashboard"].includes(location.pathname);
 
   return (
     <div className="p-4 space-y-4">
@@ -49,7 +48,7 @@ export function BillsGrid(
           </Card>
         ))}
       </div>
-      {!loading && !error && bills.length > 1 && !dashboardPage && (
+      {!loading && !error && bills.length > 1 && showTotal && (
         <Card className="bg-muted/50">
           <CardContent className="flex items-center justify-between py-4">
             <span className="text-sm font-medium text-muted-foreground">
