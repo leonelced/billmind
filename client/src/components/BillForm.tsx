@@ -11,7 +11,7 @@ import { apiFetch } from "../utils/auth";
 type BillFormProps = {
   title: string;
   path: string;
-  reqMethod: string;
+  reqMethod: "POST" | "PUT";
   initialBill?: Partial<Bill>;
 }
 
