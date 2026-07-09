@@ -22,3 +22,14 @@ export function formatDueDate(event: Bill): string {
   }
   return "";
 }
+
+
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
+export function formatCurrency(amount?: string): string {
+  if (!amount) return "Unknown";
+  return currencyFormatter.format(parseFloat(amount));
+}

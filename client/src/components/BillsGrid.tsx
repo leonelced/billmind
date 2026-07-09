@@ -2,7 +2,7 @@ import type { Bill } from "../types";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { Badge } from "#components/ui/badge";
-import { formatDueDate } from "../utils/format.js";
+import { formatCurrency, formatDueDate } from "../utils/format.js";
 
 export function BillsGrid(
   {bills, loading, error, showTotal}: {
@@ -13,15 +13,11 @@ export function BillsGrid(
   }
 ) {
   function getTotal() {
-    return bills.reduce((total, bill) => {
+    const total = bills.reduce((total, bill) => {
       return bill.amount ? total + parseFloat(bill.amount) : total;
     }, 0);
+    return total.toString();
   }
-
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  });
 
   return (
     <div className="p-4 space-y-4">
@@ -38,7 +34,7 @@ export function BillsGrid(
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{bill.amount ? `${formatter.format(parseFloat(bill.amount))}` : "Unknown"}</p>
+              <p>{formatCurrency(bill.amount)}</p>
               <p>{formatDueDate(bill)}</p>
               <Badge>{bill.recurrence}</Badge>
               <Badge variant={bill.isPaid ? "default" : "destructive"}>
@@ -55,7 +51,7 @@ export function BillsGrid(
               Total across {bills.length} bills
             </span>
             <span className="text-2xl font-bold tracking-tight">
-              {formatter.format(getTotal())}
+              {formatCurrency(getTotal())}
             </span>
           </CardContent>
         </Card>

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { Badge } from "#components/ui/badge";
 import BillForm from "#components/BillForm";
 import { useNavigate } from "react-router-dom";
-import { formatDueDate } from "../utils/format";
+import { formatCurrency, formatDueDate } from "../utils/format";
 import { apiFetch } from "../utils/auth";
 
 
@@ -119,7 +119,7 @@ export default function Bill() {
             <CardTitle>{bill?.bill.name}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{bill.bill.amount ? `$${bill.bill.amount}` : "Unknown"}</p>
+            <p>{formatCurrency(bill.bill.amount)}</p>
             <p>{formatDueDate(bill.bill)}</p>
             <div className="flex gap-2 mt-2">
               <Badge>{bill.bill.recurrence}</Badge>
