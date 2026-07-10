@@ -5,7 +5,7 @@ import { Input } from "#components/ui/input";
 import { Button } from "#components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { RECURRENCE, type Bill, type Recurrence } from "../types";
-import { apiFetch } from "../utils/auth";
+import { useApiRequest } from "#hooks/useApiRequest";
 
 
 type BillFormProps = {
@@ -22,6 +22,7 @@ export default function BillForm({
   reqMethod,
   initialBill,
 }: BillFormProps) {
+  const { run, error } = useApiRequest();
   const [name, setName] = useState(initialBill?.name ?? "");
   const [recurrence, setRecurrence] = useState<Recurrence | "">(
     initialBill?.recurrence ?? ""
@@ -33,40 +34,27 @@ export default function BillForm({
   const [dueDayOfMonth, setDueDayOfMonth] = useState(initialBill?.dueDayOfMonth);
   const [dueMonth, setDueMonth] = useState(initialBill?.dueMonth);
   const [isPaid, setIsPaid] = useState(initialBill?.isPaid);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
-    try {
-      const body: Record<string, unknown> = {
-        name,
-        recurrence,
-        amount,
-        isPaid
-      }
-      if (recurrence === RECURRENCE.ONCE) {
-        body.dueDate = dueDate;
-      } else if (recurrence === RECURRENCE.MONTHLY) {
-        body.dueDayOfMonth = dueDayOfMonth;
-      } else if (recurrence === RECURRENCE.YEARLY) {
-        body.dueDayOfMonth = dueDayOfMonth;
-        body.dueMonth = dueMonth;
-      }
-      const response = await apiFetch(path, { 
-        method: reqMethod, 
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(body) 
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Request failed");
-      }
-      navigate("/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+    const body: Record<string, unknown> = {
+      name, recurrence, amount, isPaid
     }
-    
+    if (recurrence === RECURRENCE.ONCE) {
+      body.dueDate = dueDate;
+    } else if (recurrence === RECURRENCE.MONTHLY) {
+      body.dueDayOfMonth = dueDayOfMonth;
+    } else if (recurrence === RECURRENCE.YEARLY) {
+      body.dueDayOfMonth = dueDayOfMonth;
+      body.dueMonth = dueMonth;
+    }
+    const { success } = await run<Bill[]>(path, { 
+      method: reqMethod, 
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body) 
+    });
+    if (success) navigate("/dashboard");
   }
   return (
     <div className="flex-1 flex items-center justify-center">

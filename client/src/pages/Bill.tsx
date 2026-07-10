@@ -8,16 +8,15 @@ import { Badge } from "#components/ui/badge";
 import BillForm from "#components/BillForm";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency, formatDueDate } from "../utils/format";
-import { apiFetch } from "../utils/auth";
+import { useApiRequest } from "#hooks/useApiRequest";
 
 
 export default function Bill() { 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { run, loading, error } = useApiRequest();
   const [isEditing, setIsEditing] = useState(false);
   const [bill, setBill] = useState<BillDetails>();
   const { id } = useParams();
-  const path = `/api/bills/${id}`;
+  const billPath = `/api/bills/${id}`;
   // New member to add:
   const [newMemberEmail, setNewMemberEmail] = useState("");
   // New reminder rule to add: (remind me this amount of days before the due date)
@@ -27,19 +26,9 @@ export default function Bill() {
 
   // Same fetchBill function between renders unless `path` changes
   const fetchBill = useCallback(async () =>  {
-    try {
-      const response = await apiFetch(path, { method: "GET" });
-      if (!response.ok) {
-        throw new Error("Request failed");
-      }
-      const data = await response.json();
-      setBill(data);
-    } catch (err) {
-      setError("Something went wrong fetching the bill");
-    } finally {
-      setLoading(false);
-    }
-  }, [path]);
+    const { data } = await run<BillDetails>(billPath, { method: "GET" });
+    if (data) setBill(data);
+  }, [run, billPath]);
 
 
   useEffect(() => {
@@ -50,22 +39,14 @@ export default function Bill() {
   async function handleAddMember(e: React.SubmitEvent) {
     e.preventDefault();
     const billId = bill?.bill.id;
-    const memberPath = `/api/bills/${billId}/members`;
     if (!billId) return;
-    try {
-      const response = await apiFetch( memberPath, { 
-        method: "POST", 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newMemberEmail }) 
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-      setTimeout(() => setError(""), 5000) // clear after 5 seconds
-    } finally {
+    const memberPath = `/api/bills/${billId}/members`;
+    const { data } = await run(memberPath, { 
+      method: "POST", 
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: newMemberEmail }) 
+    });
+    if (data) {
       await fetchBill();
       setNewMemberEmail("");
     }
@@ -75,19 +56,14 @@ export default function Bill() {
   async function handleAddRule(e: React.SubmitEvent) {
     e.preventDefault();
     const billId = bill?.bill.id;
+    if (!billId) return;
     const reminderPath = `/api/bills/${billId}/reminders`;
-    try {
-      const response = await apiFetch( reminderPath, { 
-        method: "POST", 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({daysBeforeDue}) 
-      });
-      if (!response.ok) {
-        throw new Error("Request failed");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
+    const { data } = await run(reminderPath, { 
+      method: "POST", 
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({daysBeforeDue}) 
+    });
+    if (data) {
       await fetchBill();
       setDaysBeforeDue(undefined);
     }
@@ -97,22 +73,18 @@ export default function Bill() {
   async function handleDelete() {
     if (!window.confirm("Are you sure you want to delete this bill?")) return;
     const billId = bill?.bill.id;
+    if (!billId) return;
     const deletePath = `/api/bills/${billId}`;
-    try {
-      const response = await apiFetch(deletePath, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed to delete");
-      navigate("/dashboard");
-    } catch (err) {
-      setError("Could not delete bill");
-    }
+    const { success } = await run(deletePath, { method: "DELETE" });
+    if (success) navigate("/dashboard");
   }
 
 
   return (
     <div>      
-      { loading && <p>Loading</p>}
+      { !bill && loading && <p>Loading</p>}
       { error && <p>{error}</p> }
-      { !loading && !error && bill &&
+      { bill &&
       <div className="flex gap-4">
         <Card className="max-w-sm shrink-0">
           <CardHeader>
@@ -133,7 +105,7 @@ export default function Bill() {
             </Button>     
             {isEditing && (
               <BillForm
-                path={path}
+                path={billPath}
                 reqMethod="PUT"
                 title="Update Bill"
                 initialBill={{
