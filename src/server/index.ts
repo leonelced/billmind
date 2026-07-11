@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cookieParser from "cookie-parser";
 import { errorMiddleWare } from "./api/middleware.js";
 import authRouter from "./routes/authRoutes.js";
 import billsRouter from "./routes/billsRoutes.js";
@@ -11,6 +12,9 @@ const PORT = process.env.PORT ?? 3000;
 
 // Built-in middleware to parse JSON request bodies
 app.use(express.json());
+// Parse incoming cookies (needed to read the refresh token cookie)
+app.use(cookieParser());
+
 
 // Route all (e.g.) /api/auth/* requests to authRouter
 app.use("/api/auth", authRouter);

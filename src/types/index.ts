@@ -18,6 +18,5 @@ export type BillReminderEvent = {
 export type UserResponse = Omit<NewUser, "passwordHash">;
 
 export type LoginResponse = UserResponse & { 
-    token: string; // access token
-    refreshToken: string; 
+  token: string; // access token
 };

@@ -37,13 +37,19 @@ export async function handlerLogin(req: Request, res: Response) {
     throw new UserNotAuthenticatedError("Could not save refresh token");
   }
 
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: config.isProduction,
+    sameSite: "strict",
+    path: config.refreshTokenPath,
+  });
+
   res.status(200).json({
     id: user.id,
     username: user.username,
     email: user.email,
     createdAt: user.createdAt,
     token: accessToken,
-    refreshToken: refreshToken
   } satisfies LoginResponse);
 }
 

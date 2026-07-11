@@ -14,7 +14,6 @@ interface LoginResponse {
   email: string;
   createdAt: string;
   token: string;
-  refreshToken: string;
 }
 
 
@@ -30,7 +29,8 @@ export default function Login() {
     const response = await fetch(url, {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
+      credentials: "include"
     });
     if (!response.ok) {
       setError("Invalid email or password");
@@ -38,7 +38,6 @@ export default function Login() {
     }
     const data = await response.json() as LoginResponse;
     localStorage.setItem('token', data.token);
-    localStorage.setItem('refreshToken', data.refreshToken);
     navigate("/dashboard");
   }
 

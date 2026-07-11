@@ -24,10 +24,9 @@ export default function Navigation() {
 ];
 
   async function handleLogout() {
-    const refreshToken = localStorage.getItem("refreshToken");
     await fetch("/api/auth/revoke", {
       method: 'POST',
-      headers: {'Authorization': `Bearer ${refreshToken}`}
+      credentials: "include" // sends the httpOnly refresh cookie automatically
     });
     localStorage.clear();
     navigate("/");

@@ -20,11 +20,10 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
 
 
 async function refreshFetch(url: string, options: RequestInit = {}) {
-  const refreshToken = localStorage.getItem("refreshToken");
   const path = "/api/auth/refresh";
   const refreshResponse = await fetch(path, {
     method: "POST",
-    headers: { 'Authorization': `Bearer ${refreshToken}`, },
+    credentials: "include" // sends the httpOnly refresh cookie automatically
   });
   if (refreshResponse.status === 401) {
     localStorage.clear();
@@ -45,7 +44,7 @@ async function refreshFetch(url: string, options: RequestInit = {}) {
 
 export function validatePassword(password: string): string | null { // for new users
   if (password.length < 12) {
-    return"Password must be at least 12 characters long";
+    return "Password must be at least 12 characters long";
   }
   if (password.length > 64) {
     return "Password must be at most 64 characters long";
