@@ -36,7 +36,7 @@ export default function BillForm({
   const [isPaid, setIsPaid] = useState(initialBill?.isPaid);
   const navigate = useNavigate();
 
-  async function handleSubmit(e: React.SubmitEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const body: Record<string, unknown> = {
       name, recurrence, amount, isPaid

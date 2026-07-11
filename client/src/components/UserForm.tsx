@@ -29,7 +29,7 @@ export default function UserForm(props: UserFormProps) {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  async function handleSubmit(e: React.SubmitEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     

@@ -36,7 +36,7 @@ export default function Bill() {
   }, [fetchBill]); // re-run this effect when fetchBill changes
 
 
-  async function handleAddMember(e: React.SubmitEvent) {
+  async function handleAddMember(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const billId = bill?.bill.id;
     if (!billId) return;
@@ -53,7 +53,7 @@ export default function Bill() {
   }
 
 
-  async function handleAddRule(e: React.SubmitEvent) {
+  async function handleAddRule(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const billId = bill?.bill.id;
     if (!billId) return;
