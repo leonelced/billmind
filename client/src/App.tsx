@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import UserRegister from './pages/UserRegister';
 import Dashboard from './pages/Dashboard';
+import NotFound from '#components/NotFound';
 import BillNew from './pages/BillNew';
 import Bill from './pages/Bill';
 import BillsMonthly from './pages/BillsMonthly';
@@ -40,7 +41,7 @@ function AppContent() {
         <Route path='/bills/new' element={<ProtectedRoute><BillNew /></ProtectedRoute>}/>  
         <Route path='/bills/:id' element={<ProtectedRoute><Bill /></ProtectedRoute>}/>  
         <Route path='/update' element={<ProtectedRoute><UserUpdate /></ProtectedRoute>}/>  
-        <Route path='*' element={<Navigate to={isAuthenticated() ? "/dashboard" : "/"}/>} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </div>
   );
