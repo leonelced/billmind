@@ -6,6 +6,7 @@ import { Label } from "#components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "#components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { API } from "../utils/api";
 
 
 interface LoginResponse {
@@ -25,7 +26,7 @@ export default function Login() {
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    const url: string = "/api/auth/login";
+    const url = API.auth.login();
     const response = await fetch(url, {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
