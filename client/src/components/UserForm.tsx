@@ -51,11 +51,14 @@ export default function UserForm(props: UserFormProps) {
         body: JSON.stringify({ username, email, password }) 
       });
       if (!response.ok) {
-        throw new Error("Request failed");
+        let backendMessage: string | undefined;
+        const data = await response.json();
+        backendMessage = data?.message ?? data?.error;
+        throw new Error(backendMessage || "Request failed");
       }
       navigate(props.redirect);
-    } catch {
-      setError("Something went wrong");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } 
   }
 
