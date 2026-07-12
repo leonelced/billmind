@@ -1,7 +1,8 @@
 import BillForm from "#components/BillForm";
+import { API } from "../utils/api";
 
 export default function NewBill() {
   return (
-    <BillForm path="/api/bills/" reqMethod="POST" title="+ New Bill"/>
+    <BillForm path={API.bills.list()} reqMethod="POST" title="+ New Bill"/>
   );
 }
