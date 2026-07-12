@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { type Bill } from "../types.js";
 import { useApiRequest } from "./useApiRequest.js";
+import { API } from "../utils/api.js";
 
 
 export default function useBills(filter?: (bill: Bill) => boolean) { 
@@ -10,7 +11,8 @@ export default function useBills(filter?: (bill: Bill) => boolean) {
   // this runs once when the component first renders
   useEffect(() => {
     async function loadBills() {
-      const { data } = await run<Bill[]>("/api/bills/", { method: "GET" });
+      const url = API.bills.list();
+      const { data } = await run<Bill[]>(url, { method: "GET" });
       if (data) setBills(filter ? data.filter(filter) : data);
     }
     loadBills();
