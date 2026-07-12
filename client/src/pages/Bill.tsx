@@ -9,6 +9,7 @@ import BillForm from "#components/BillForm";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency, formatDueDate } from "../utils/format";
 import { useApiRequest } from "#hooks/useApiRequest";
+import { API } from "../utils/api";
 
 
 export default function Bill() { 
@@ -16,7 +17,8 @@ export default function Bill() {
   const [isEditing, setIsEditing] = useState(false);
   const [bill, setBill] = useState<BillDetails>();
   const { id } = useParams();
-  const billPath = `/api/bills/${id}`;
+  if (!id) return;
+  const billPath = API.bills.details(id);
   // New member to add:
   const [newMemberEmail, setNewMemberEmail] = useState("");
   // New reminder rule to add: (remind me this amount of days before the due date)
