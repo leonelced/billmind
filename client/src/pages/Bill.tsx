@@ -60,7 +60,7 @@ export default function Bill() {
     e.preventDefault();
     const billId = bill?.bill.id;
     if (!billId) return;
-    const reminderPath = `/api/bills/${billId}/reminders`;
+    const reminderPath = API.bills.reminders(billId);
     const { data } = await run(reminderPath, { 
       method: "POST", 
       headers: { 'Content-Type': 'application/json' },
