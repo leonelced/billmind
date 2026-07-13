@@ -111,7 +111,7 @@ export async function verifyBillAccess(userId: string, billId: string) {
 
 export function validatePassword(password: string) {
   if (password.length < 12) {
-    throw new BadRequestError("Password must be at least 8 characters long");
+    throw new BadRequestError("Password must be at least 12 characters long");
   }
   if (password.length > 64) {
     throw new BadRequestError("Password must be at most 64 characters long");
