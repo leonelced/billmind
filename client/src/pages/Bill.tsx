@@ -19,6 +19,7 @@ export default function Bill() {
   const { id } = useParams();
   if (!id) return;
   const billPath = API.bills.details(id);
+
   // New member to add:
   const [newMemberEmail, setNewMemberEmail] = useState("");
   // New reminder rule to add: (remind me this amount of days before the due date)
@@ -42,7 +43,7 @@ export default function Bill() {
     e.preventDefault();
     const billId = bill?.bill.id;
     if (!billId) return;
-    const memberPath = `/api/bills/${billId}/members`;
+    const memberPath = API.bills.members(billId);
     const { data } = await run(memberPath, { 
       method: "POST", 
       headers: { 'Content-Type': 'application/json' },
