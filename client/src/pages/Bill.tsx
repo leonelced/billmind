@@ -77,7 +77,7 @@ export default function Bill() {
     if (!window.confirm("Are you sure you want to delete this bill?")) return;
     const billId = bill?.bill.id;
     if (!billId) return;
-    const deletePath = `/api/bills/${billId}`;
+    const deletePath = API.bills.details(billId);
     const { success } = await run(deletePath, { method: "DELETE" });
     if (success) navigate("/dashboard");
   }
