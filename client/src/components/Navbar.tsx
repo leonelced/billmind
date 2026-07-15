@@ -9,6 +9,7 @@ import {
 } from "#components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { isAuthenticated } from "../utils/auth";
+import { API } from "../utils/api";
 
 
 export default function Navigation() {
@@ -24,7 +25,7 @@ export default function Navigation() {
 ];
 
   async function handleLogout() {
-    await fetch("/api/auth/revoke", {
+    await fetch(API.auth.revoke(), {
       method: 'POST',
       credentials: "include" // sends the httpOnly refresh cookie automatically
     });
