@@ -32,6 +32,11 @@ export default function Navigation() {
     localStorage.clear();
     navigate("/");
   }
+
+  async function handleDeleteAccount() {
+    if (!window.confirm("Are you sure you want to delete your account?")) return; // ****************** Complete
+    console.log("account deleted");
+  }
   
   return (
     <div className="flex items-center justify-between px-4">
@@ -83,6 +88,11 @@ export default function Navigation() {
                 className="text-muted-foreground hover:text-foreground"
               >
                 Logout
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDeleteAccount}
+                className="text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400"
+              >
+                Delete Account
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
