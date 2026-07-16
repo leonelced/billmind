@@ -105,5 +105,6 @@ export async function handlerUsersDelete(req: Request, res: Response) { // TODO:
     throw new Error(`User ${userId} was not deleted.`);
   }
   
+  res.clearCookie("refreshToken", { path: config.refreshTokenPath });
   res.status(204).send();
 }
