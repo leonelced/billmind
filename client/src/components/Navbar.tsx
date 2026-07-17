@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "#components/ui/button";
 import {
@@ -10,19 +11,21 @@ import {
 import { ChevronDown } from "lucide-react";
 import { isAuthenticated } from "../utils/auth";
 import { API } from "../utils/api";
+import DeleteAccountDialog from "./UserDelete";
 
 
 export default function Navigation() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const hideNavButtons = ["/", "/login", "/register"].includes(location.pathname);
   const hideAuthButtons = ["/login", "/register"].includes(location.pathname);
   const navLinks = [
-  { to: "/dashboard", label: "Dashboard" },
-  { to: "/bills/monthly", label: "Monthly" },
-  { to: "/bills/yearly", label: "Yearly" },
-  { to: "/bills/new", label: "+ New Bill" },
-];
+    { to: "/dashboard", label: "Dashboard" },
+    { to: "/bills/monthly", label: "Monthly" },
+    { to: "/bills/yearly", label: "Yearly" },
+    { to: "/bills/new", label: "+ New Bill" },
+  ];
 
   async function handleLogout() {
     await fetch(API.auth.revoke(), {
@@ -31,11 +34,6 @@ export default function Navigation() {
     });
     localStorage.clear();
     navigate("/");
-  }
-
-  async function handleDeleteAccount() {
-    if (!window.confirm("Are you sure you want to delete your account?")) return; // ****************** Complete
-    console.log("account deleted");
   }
   
   return (
@@ -89,13 +87,18 @@ export default function Navigation() {
               >
                 Logout
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDeleteAccount}
+              <DropdownMenuItem 
+                onSelect={(e) => {
+                 e.preventDefault();
+                 setDeleteOpen(true);
+                }}
                 className="text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 dark:hover:text-red-400"
               >
                 Delete Account
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <DeleteAccountDialog open={deleteOpen} onOpenChange={setDeleteOpen} />
         </div>
       )}
     </div>
