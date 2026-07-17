@@ -1,3 +1,5 @@
+import { API } from "./api";
+
 export function isAuthenticated() {
   return !!localStorage.getItem("token");
 }
@@ -20,8 +22,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
 
 
 async function refreshFetch(url: string, options: RequestInit = {}) {
-  const path = "/api/auth/refresh";
-  const refreshResponse = await fetch(path, {
+  const refreshResponse = await fetch(API.auth.refresh(), {
     method: "POST",
     credentials: "include" // sends the httpOnly refresh cookie automatically
   });
