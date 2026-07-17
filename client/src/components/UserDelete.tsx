@@ -48,6 +48,9 @@ export default function DeleteAccountDialog({
     try {
       const res = await apiFetch(API.users.base(), {
         method: "DELETE",
+        credentials: "include", 
+        // lets the browser accept the Set-Cookie header that clears refreshToken 
+        // (not needed to send it — auth here is via Bearer token)
         headers: {
           "Content-Type": "application/json",
         },
