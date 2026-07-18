@@ -45,10 +45,12 @@ Failed emails are routed to a Dead Letter Queue instead of being lost.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/auth/register` | Register |
 | POST | `/api/auth/login` | Login |
 | POST | `/api/auth/refresh` | Refresh access token |
 | POST | `/api/auth/revoke` | Logout |
+| POST | `/api/users` | Register |
+| PUT | `/api/users` | Update account |
+| DELETE | `/api/users` | Delete account |
 | GET | `/api/bills` | Get all your bills |
 | POST | `/api/bills` | Create a bill |
 | GET | `/api/bills/:id` | Get bill details |
