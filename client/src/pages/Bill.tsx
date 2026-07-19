@@ -17,8 +17,9 @@ export default function Bill() {
   const [isEditing, setIsEditing] = useState(false);
   const [bill, setBill] = useState<BillDetails>();
   const { id } = useParams();
-  if (!id) return;
-  const billPath = API.bills.details(id);
+  const billPath = id ? API.bills.details(id) : "";
+  // Fallback keeps billPath always defined so hooks below can be called
+  // unconditionally (Rules of Hooks). The real guard is in fetchBill/JSX below.
 
   // New member to add:
   const [newMemberEmail, setNewMemberEmail] = useState("");
@@ -29,6 +30,7 @@ export default function Bill() {
 
   // Same fetchBill function between renders unless `path` changes
   const fetchBill = useCallback(async () =>  {
+    if (!id) return; // Guard: don't fire a request with an empty/invalid path when id is missing.
     const { data } = await run<BillDetails>(billPath, { method: "GET" });
     if (data) setBill(data);
   }, [run, billPath]);
@@ -82,6 +84,8 @@ export default function Bill() {
     if (success) navigate("/dashboard");
   }
 
+  // Actual bail-out for missing id — safe here since it's AFTER all hooks.
+  if (!id) return <p>Bill not found</p> 
 
   return (
     <div>      
