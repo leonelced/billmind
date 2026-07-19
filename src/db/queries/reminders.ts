@@ -23,16 +23,18 @@ export async function getBillsWithRemindersForToday() {
     .innerJoin(users, eq(users.id, billMembers.userId))
     .where(
       sql`
-      (${bills.recurrence} = 'once' AND 
-        ${bills.dueDate}::date - ${reminderRules.daysBeforeDue} * INTERVAL '1 day' = CURRENT_DATE)
-      OR
-      (${bills.recurrence} = 'monthly' AND 
-        (DATE_TRUNC('month', CURRENT_DATE) + (${bills.dueDayOfMonth} - 1) * INTERVAL '1 day')::date 
-        - ${reminderRules.daysBeforeDue} * INTERVAL '1 day' = CURRENT_DATE)
-      OR
-      (${bills.recurrence} = 'yearly' AND 
-        MAKE_DATE(EXTRACT(YEAR FROM CURRENT_DATE)::int, ${bills.dueMonth}, ${bills.dueDayOfMonth})::date
-        - ${reminderRules.daysBeforeDue} * INTERVAL '1 day' = CURRENT_DATE)
+      ${bills.isPaid} = false AND (
+        (${bills.recurrence} = 'once' AND 
+          ${bills.dueDate}::date - ${reminderRules.daysBeforeDue} * INTERVAL '1 day' = CURRENT_DATE)
+        OR
+        (${bills.recurrence} = 'monthly' AND 
+          (DATE_TRUNC('month', CURRENT_DATE) + (${bills.dueDayOfMonth} - 1) * INTERVAL '1 day')::date 
+          - ${reminderRules.daysBeforeDue} * INTERVAL '1 day' = CURRENT_DATE)
+        OR
+        (${bills.recurrence} = 'yearly' AND 
+          MAKE_DATE(EXTRACT(YEAR FROM CURRENT_DATE)::int, ${bills.dueMonth}, ${bills.dueDayOfMonth})::date
+          - ${reminderRules.daysBeforeDue} * INTERVAL '1 day' = CURRENT_DATE)
+      )
       `
     )
   return result;
